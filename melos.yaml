@@ -1,0 +1,57 @@
+name: lumy_workspace
+
+packages:
+  - apps/**
+  - packages/**
+
+scripts:
+  format:flutter:
+    name: Format Flutter
+    description: Formats flutter projects
+    run: melos exec --flutter -- "dart format ."
+  format:flutter:ci:
+    name: Format Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --flutter -- "dart format --set-exit-if-changed ."
+  format:dart:
+    name: Format Dart
+    description: Formats dart projects
+    run: melos exec --no-flutter -- "dart format ."
+  format:dart:ci:
+    name: Format Dart on CI
+    description: Formats flutter projects
+    run: melos exec --no-flutter -- "dart format --set-exit-if-changed ."
+  analyze:flutter:ci:
+    name: Analyze Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --flutter -- "flutter analyze --fatal-infos"
+  analyze:dart:ci:
+    name: Analyze Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --no-flutter -- "dart analyze --fatal-infos"
+  test:flutter:ci:
+    name: Test Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --flutter --dir-exists="test" -- "flutter test --test-randomize-ordering-seed random"
+  test:dart:ci:
+    name: Format Dart on CI
+    description: Formats flutter projects
+    run: melos exec --no-flutter --dir-exists="test" -- "dart test --test-randomize-ordering-seed random"
+  codegen:
+    name: Run codegen
+    description: Run codegen for all projects
+    run: melos exec --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs -v"
+  # Database commands
+  export_schema:
+    name: Export schema
+    description: Export database schema for the app module
+    run: melos exec --scope="lumy" -- "dart run drift_dev schema dump lib/persistence/local/database.dart drift_schemas/"
+  create_migration:
+    name: Create migration
+    description: Create a new database migration for the app module
+    run: melos exec --scope="lumy" -- "dart run drift_dev schema steps drift_schemas/ lib/persistence/schema_versions.dart"
+  generate_test_helpers:
+    name: Generate database test helpers
+    description: Generate database test helpers for the app module
+    run: melos exec --scope="lumy" -- "dart run drift_dev schema generate drift_schemas/ test/generated_migrations/"
+

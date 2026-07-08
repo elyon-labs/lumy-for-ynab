@@ -1,0 +1,22 @@
+name: ynab_api_models
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.7.2
+
+# Add regular dependencies here.
+dependencies:
+  dart_foundation:
+    git:
+      url: https://github.com/elyon-labs/dart-foundation.git
+      ref: main
+  dart_mappable: ^4.3.0
+  equatable: ^2.0.5
+
+dev_dependencies:
+  build_runner: ^2.4.13
+  dart_mappable_builder: ^4.3.0
+  lints: ^4.0.0
+  test: ^1.24.0

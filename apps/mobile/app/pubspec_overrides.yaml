@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: ynab_api_models
+dependency_overrides:
+  # https://github.com/flutter/flutter/issues/155306
+  url_launcher_ios: ^6.3.1
+  ynab_api_models:
+    path: ../ynab_api_models

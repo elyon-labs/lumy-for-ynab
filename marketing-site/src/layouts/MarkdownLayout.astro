@@ -1,0 +1,63 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+const { frontmatter } = Astro.props;
+---
+
+<html>
+    <head>
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+        />
+        <title>{frontmatter.title}</title>
+    </head>
+    <body>
+        <Header />
+        <h1>{frontmatter.title}</h1>
+        <slot />
+        <Footer />
+    </body>
+</html>
+
+<style is:global>
+    :root {
+        --accent: 115, 87, 219;
+        --accent-light: 154, 127, 229;
+        --accent-dark: 92, 67, 214;
+        --accent-gradient: linear-gradient(
+            45deg,
+            rgb(var(--accent)),
+            rgb(var(--accent-light)) 30%,
+            white 60%
+        );
+        margin: auto;
+        padding: 1rem;
+        width: 800px;
+        max-width: calc(100% - 2rem);
+        font-size: 20px;
+        color: white;
+        line-height: 1.6;
+    }
+    html {
+        font-family: "Outfit", sans-serif;
+        background: #13151a;
+        background-size: 224px;
+    }
+    a {
+        color: rgb(var(--accent));
+    }
+    code {
+        font-family:
+            Menlo,
+            Monaco,
+            Lucida Console,
+            Liberation Mono,
+            DejaVu Sans Mono,
+            Bitstream Vera Sans Mono,
+            Courier New,
+            monospace;
+    }
+</style>

@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.brandontrautmann.lumy",
+      "sha256_cert_fingerprints": [
+        "B5:05:00:AB:9D:B4:87:DD:82:AC:8A:AC:A7:48:84:20:17:07:16:F6:00:F0:1C:C6:A4:6F:B9:BE:38:CF:74:31",
+        "4C:1B:1F:F9:CB:EE:50:74:E3:47:90:AA:1A:40:E3:F6:72:EE:9D:2F:1F:DD:C3:0F:9C:25:9A:D5:78:F5:5A:E0"
+      ]
+    }
+  }
+]

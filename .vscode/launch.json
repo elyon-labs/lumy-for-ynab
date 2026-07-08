@@ -1,0 +1,90 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Lumy (Local)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/mobile/app/lib/main.dart",
+      "preLaunchTask": "echo_local_env",
+      "args": [
+        "--dart-define-from-file=../../../.vscode/.base64.local.env",
+        "--web-port=49446"
+      ]
+    },
+    {
+      "name": "Lumy (Dev)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/mobile/app/lib/main.dart",
+      "preLaunchTask": "echo_dev_env",
+      "args": [
+        "--dart-define-from-file=../../../.vscode/.base64.dev.env",
+        "--web-port=49446"
+      ]
+    },
+    {
+      "name": "Lumy (Prod)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/mobile/app/lib/main.dart",
+      "preLaunchTask": "echo_prod_env",
+      "args": [
+        "--dart-define-from-file=../../../.vscode/.base64.prod.env",
+        "--web-port=49446"
+      ]
+    },
+    {
+      "name": "Attach to Lumy",
+      "request": "attach",
+      "type": "dart",
+      "program": "apps/mobile/app/lib/main.dart",
+      "preLaunchTask": "echo_prod_env",
+      "args": ["--dart-define-from-file=../../../.vscode/.base64.dev.env"]
+    },
+    {
+      "name": "Lumy (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/mobile/app/lib/main.dart",
+      "flutterMode": "profile",
+      "preLaunchTask": "echo_prod_env",
+      "args": ["--dart-define-from-file=../../../.vscode/.base64.prod.env"]
+    },
+    {
+      "name": "Lumy (release mode)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/mobile/app/lib/main.dart",
+      "flutterMode": "release",
+      "preLaunchTask": "echo_prod_env",
+      "args": ["--dart-define-from-file=../../../.vscode/.base64.prod.env"]
+    },
+    {
+      "name": "Unit tests",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/mobile/app/test/",
+      "args": ["--dart-define-from-file=../../../.vscode/.base64.dev.env"]
+    },
+    {
+      "name": "Integration tests",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/mobile/app/integration_test/",
+      "args": ["--dart-define-from-file=../../../.vscode/.base64.dev.env"]
+    },
+    {
+      "name": "Server",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/server/bin/server.dart",
+      "env": {
+        "ENVIRONMENT": "development"
+      }
+    }
+  ]
+}

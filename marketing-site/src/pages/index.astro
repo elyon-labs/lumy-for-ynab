@@ -1,0 +1,203 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import budgetTabImage from "../assets/budget_tab.png";
+import spendTrackerImage from "../assets/spend_tracker.png";
+import incomeExpenseImage from "../assets/income_expense.png";
+import googlePlay from "../assets/download_play_store.png";
+import appStore from "../assets/download_app_store.png";
+import RatingCard from "../components/RatingCard.astro";
+---
+
+<Layout title="Lumy for YNAB">
+	<main>
+		<h1><span class="text-gradient">Lumy</span> for YNAB.</h1>
+		<p class="subtitle">You've never YNAB'd like this.</p>
+		<div class:list={["download-buttons"]}>
+			<a
+				href="https://apps.apple.com/app/6454931849"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<Image
+					class:list={["store-button"]}
+					src={appStore}
+					alt="Download on the app store"
+					loading={"eager"}
+				/>
+			</a>
+			<a
+				href="https://play.google.com/store/apps/details?id=com.brandontrautmann.lumy"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<Image
+					class:list={["store-button"]}
+					src={googlePlay}
+					alt="Get it on Play Store"
+					loading={"eager"}
+				/>
+			</a>
+		</div>
+		<div class="screenshots">
+			<Image
+				src={budgetTabImage}
+				alt="Lumy Budget Tab"
+				loading={"eager"}
+				class:list={["responsive-image"]}
+			/>
+			<Image
+				src={spendTrackerImage}
+				alt="Lumy Spend Tracker"
+				loading={"eager"}
+				class:list={["responsive-image", "conditional-image"]}
+			/>
+			<Image
+				src={incomeExpenseImage}
+				alt="Lumy Income Expense Chart"
+				loading={"eager"}
+				class:list={["responsive-image", "conditional-image"]}
+			/>
+		</div>
+		<ul role="list" class="link-card-grid">
+			<RatingCard
+				rating={5}
+				title="Best YNAB app out there!!"
+				body="Since YNAB doesn’t provide many out of the box reports, an app to do this is required…and Lumy does this amazingly well. Strong charts, amazingly active developer, and a nice plan for the future in their roadmap."
+				author="Staxxed"
+			/>
+			<RatingCard
+				rating={5}
+				title="Best add on for YNAB"
+				body="I have nothing but good things to say about this app. The developer takes feedback and improves the app. It offers so many charts YNAB lacks and even helps track spending."
+				author="Littiy"
+			/>
+			<RatingCard
+				rating={5}
+				title="Amazing"
+				body="This app is incredible, it elegantly adds so much functionally to YNAB! Reporting, goal setting, etc."
+				author="jake from stakefarm"
+			/>
+			<RatingCard
+				rating={5}
+				title="Perfect YNAB Companion"
+				body="If you love YNAB you will love this app. Amazing reports for mobile!"
+				author="Me and the weather"
+			/>
+		</ul>
+		<div class:list={["download-buttons"]}>
+			<a
+				href="https://apps.apple.com/app/6454931849"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<Image
+					class:list={["store-button"]}
+					src={appStore}
+					alt="Download on the app store"
+					loading={"lazy"}
+				/>
+			</a>
+			<a
+				href="https://play.google.com/store/apps/details?id=com.brandontrautmann.lumy"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<Image
+					class:list={["store-button"]}
+					src={googlePlay}
+					alt="Get it on Play Store"
+					loading={"lazy"}
+				/>
+			</a>
+		</div>
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 800px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+	}
+	.astro-a {
+		position: absolute;
+		top: -32px;
+		left: 50%;
+		transform: translatex(-50%);
+		width: 220px;
+		height: auto;
+		z-index: -1;
+	}
+	.subtitle {
+		display: flex;
+		justify-content: center;
+	}
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+	}
+	.text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+	.download-buttons {
+		display: grid;
+		align-items: center;
+		place-items: center;
+		justify-content: center; /* Center the buttons horizontally */
+		gap: 10px; Adjust the gap as needed
+		margin-top: 20px; /* Adjust the top margin as needed */
+	}
+	/* Lay buttons out horizontally when enough space */
+	@media (min-width: 601px) {
+		.download-buttons {
+			display: flex;
+		}
+	}
+	.store-button {
+		height: 60px; /* Adjust the height as needed */
+		width: auto; /* Maintain aspect ratio */
+	}
+	.screenshots {
+		max-width: 200px;
+		display: flex;
+		justify-content: center;
+		gap: 20px; /* Adjust the gap as needed */
+		margin-top: 20px; /* Adjust the top margin as needed */
+		/* Center the screenshots horizontally */
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.responsive-image {
+		width: 100%;
+		height: auto;
+		justify-content: center;
+		align-items: center;
+	}
+	.conditional-image {
+		display: none;
+	}
+	/* Only show these images on tablet+ */
+	@media (min-width: 601px) {
+		.conditional-image {
+			display: block;
+		}
+	}
+	.link-card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+		gap: 1rem;
+		padding: 0;
+	}
+</style>

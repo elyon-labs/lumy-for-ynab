@@ -1,0 +1,27 @@
+{
+    "data": {
+        "accounts": [
+            {
+                "id": "a33ca76b-7046-4e3e-a906-1223b9fbd638",
+                "name": "Checking",
+                "type": "checking",
+                "on_budget": true,
+                "closed": false,
+                "note": null,
+                "balance": 931590,
+                "cleared_balance": 809000,
+                "uncleared_balance": 122590,
+                "transfer_payee_id": "c7f1f48d-4be2-4fdb-afe0-391cfcbb6fbd",
+                "direct_import_linked": false,
+                "direct_import_in_error": false,
+                "last_reconciled_at": "2023-11-08T20:10:22Z",
+                "debt_original_balance": null,
+                "debt_interest_rates": {},
+                "debt_minimum_payments": {},
+                "debt_escrow_amounts": {},
+                "deleted": false
+            }
+        ],
+        "server_knowledge": 164
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "data": {
+        "payees": [
+            {
+                "id": "801cad99-475f-4778-bea9-cf626f1bcffe",
+                "name": "Starting Balance",
+                "transfer_account_id": null,
+                "deleted": false
+            },
+            {
+                "id": "ee26e409-b9bf-4f30-9e30-956d21cfdc77",
+                "name": "Manual Balance Adjustment",
+                "transfer_account_id": null,
+                "deleted": false
+            },
+            {
+                "id": "f2f19db4-4df9-49ca-a1fb-62f224687a51",
+                "name": "Reconciliation Balance Adjustment",
+                "transfer_account_id": null,
+                "deleted": false
+            },
+            {
+                "id": "c7f1f48d-4be2-4fdb-afe0-391cfcbb6fbd",
+                "name": "Transfer : Checking",
+                "transfer_account_id": "a33ca76b-7046-4e3e-a906-1223b9fbd638",
+                "deleted": false
+            },
+            {
+                "id": "09e8c113-af6f-467d-b47c-1f36eee84243",
+                "name": "Acme",
+                "transfer_account_id": null,
+                "deleted": false
+            },
+            {
+                "id": "7c255344-1897-4ebf-8aa0-5e6428794d75",
+                "name": "Verizon",
+                "transfer_account_id": null,
+                "deleted": false
+            },
+            {
+                "id": "d22bc2ae-074d-4265-bff0-e0ebaf69cebe",
+                "name": "Payroll",
+                "transfer_account_id": null,
+                "deleted": false
+            },
+            {
+                "id": "94d1c17e-b06e-4d25-b6ee-62da58128c3f",
+                "name": "Venmo - Amber",
+                "transfer_account_id": null,
+                "deleted": false
+            },
+            {
+                "id": "75b22d28-36b2-4dbe-a2fc-c7a78afddade",
+                "name": "Transfer : Car Loan",
+                "transfer_account_id": "2e54d982-5c0f-477f-ad56-6c9cf2165b72",
+                "deleted": false
+            },
+            {
+                "id": "12e44118-098a-4a1c-bcc9-ef844fefa245",
+                "name": "Bobert's Rent",
+                "transfer_account_id": null,
+                "deleted": false
+            }
+        ],
+        "server_knowledge": 272
+    }
+}

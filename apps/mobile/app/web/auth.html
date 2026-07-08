@@ -1,0 +1,144 @@
+<!-- <!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>OAuth Redirect</title>
+</head>
+
+<body>
+  <script>
+    (function () {
+      try {
+        // Works when the redirect page is served from the same origin as your app.
+        const targetOrigin = window.location.origin;
+        if (window.opener) {
+          // Send the full URL back (includes ?code=...&state=...)
+          window.opener.postMessage(window.location.href, targetOrigin);
+        }
+        document.getElementById('status').textContent = 'Message sent ✔';
+      } catch (e) {
+        document.getElementById('status').textContent = 'Error: ' + e;
+      } finally {
+        // window.close();
+      }
+    })();
+  </script>
+</body>
+
+</html> -->
+
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>OAuth Redirect</title>
+  <!-- Use defer so the script runs after HTML is parsed -->
+  <script defer>
+    (function () {
+      // ---- helpers ----
+      function $(id) {return document.getElementById(id);}
+      function log(msg) {console.log(msg); const el = $('log'); if (el) el.textContent += msg + "\n";}
+
+      // base64url -> string
+      function b64urlToStr(s) {
+        try {
+          s = s.replace(/-/g, '+').replace(/_/g, '/');
+          const pad = s.length % 4 === 2 ? '==' : s.length % 4 === 3 ? '=' : '';
+          return atob(s + pad);
+        } catch (e) {return '';}
+      }
+
+      function parseStateOrigin() {
+        const qp = new URLSearchParams(window.location.search);
+        const state = qp.get('state') || '';
+        try {
+          const obj = JSON.parse(b64urlToStr(state));
+          return (obj && obj.origin) || null;
+        } catch {return null;}
+      }
+
+      function allowed(origin) {
+        // Allowlist for dev/prod; tweak as needed
+        const ALLOW = [
+          window.location.origin,               // same-origin case
+          'http://localhost:3000',
+          'http://localhost:5173',
+          'http://localhost:49446',
+          'https://app.example.com'
+        ];
+        return !!origin && ALLOW.includes(origin);
+      }
+
+      // ---- main ----
+      window.addEventListener('load', function () {
+        const qp = new URLSearchParams(window.location.search);
+        const code = qp.get('code');
+        const state = qp.get('state');
+        const href = window.location.href;
+
+        log('Loaded redirect page');
+        log('window.location.href = ' + href);
+        log('Has opener? ' + (!!window.opener));
+
+        // Choose targetOrigin
+        // Prefer origin from state (cross-origin setups). Fall back to same-origin.
+        let targetOrigin = parseStateOrigin() || window.location.origin;
+        log('targetOrigin candidate = ' + targetOrigin);
+
+        if (!window.opener) {
+          $('status').textContent = 'No opener; cannot notify parent. You may close this window.';
+          return;
+        }
+
+        if (!allowed(targetOrigin)) {
+          $('status').textContent = 'Blocked: unexpected targetOrigin: ' + targetOrigin;
+          log('Blocked postMessage to disallowed origin: ' + targetOrigin);
+          return;
+        }
+
+        if (!code) {
+          $('status').textContent = 'No code found in URL.';
+          log('No ?code in query string');
+          return;
+        }
+
+        try {
+          $('status').textContent = 'Sending message to parent…';
+          window.opener.postMessage(href, targetOrigin);
+          log('postMessage sent to ' + targetOrigin);
+
+          // Give yourself a moment to see logs; shorten when done debugging.
+          setTimeout(function () {
+            window.close();
+          }, 15000);
+        } catch (e) {
+          $('status').textContent = 'Error sending message: ' + e;
+          log('Error: ' + e);
+        }
+      });
+    })();
+  </script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 2rem;
+    }
+
+    pre {
+      background: #f4f4f4;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Redirect</h1>
+  <p id="status">Initializing…</p>
+  <pre id="log"></pre>
+</body>
+
+</html>

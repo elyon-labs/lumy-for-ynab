@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "mcp__ide__getDiagnostics"
+    ],
+    "deny": []
+  }
+}

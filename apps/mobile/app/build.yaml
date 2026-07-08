@@ -1,0 +1,5 @@
+global_options:
+  dart_mappable_builder:
+    options:
+      # the case style for the map keys, defaults to 'none'
+      caseStyle: snakeCase # or 'camelCase', 'snakeCase', etc.

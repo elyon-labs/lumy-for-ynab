@@ -1,0 +1,29 @@
+ext {
+    // START flutter_background_fetch configuration
+    // https://github.com/transistorsoft/flutter_background_fetch/blob/master/help/INSTALL-ANDROID.md
+    appCompatVersion = "1.4.2"
+    // END flutter_background_fetch configuration
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // START flutter_background_fetch configuration
+        // https://github.com/transistorsoft/flutter_background_fetch/blob/master/help/INSTALL-ANDROID.md
+        maven { url "${project(':background_fetch').projectDir}/libs" }
+        // END flutter_background_fetch configuration
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

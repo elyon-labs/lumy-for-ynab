@@ -1,0 +1,87 @@
+{
+    "data": {
+        "budgets": [
+            {
+                "id": "3e8701ce-616e-4486-a5e4-deba70252ea1",
+                "name": "MOPS Budget",
+                "last_modified_on": "2023-11-17T18:39:08Z",
+                "first_month": "2023-07-01",
+                "last_month": "2023-11-01",
+                "date_format": {
+                    "format": "MM/DD/YYYY"
+                },
+                "currency_format": {
+                    "iso_code": "USD",
+                    "example_format": "123,456.78",
+                    "decimal_digits": 2,
+                    "decimal_separator": ".",
+                    "symbol_first": true,
+                    "group_separator": ",",
+                    "currency_symbol": "$",
+                    "display_symbol": true
+                }
+            },
+            {
+                "id": "471adef4-9368-4624-8a62-5ff6a3ede768",
+                "name": "My Budget",
+                "last_modified_on": "2023-11-20T02:49:57Z",
+                "first_month": "2023-11-01",
+                "last_month": "2023-11-01",
+                "date_format": {
+                    "format": "MM/DD/YYYY"
+                },
+                "currency_format": {
+                    "iso_code": "USD",
+                    "example_format": "123,456.78",
+                    "decimal_digits": 2,
+                    "decimal_separator": ".",
+                    "symbol_first": true,
+                    "group_separator": ",",
+                    "currency_symbol": "$",
+                    "display_symbol": true
+                }
+            },
+            {
+                "id": "95b4c93f-5972-453b-a759-18829b2d9e4a",
+                "name": "Test Budget",
+                "last_modified_on": "2023-11-09T18:38:30Z",
+                "first_month": "2023-08-01",
+                "last_month": "2023-11-01",
+                "date_format": {
+                    "format": "MM/DD/YYYY"
+                },
+                "currency_format": {
+                    "iso_code": "USD",
+                    "example_format": "123,456.78",
+                    "decimal_digits": 2,
+                    "decimal_separator": ".",
+                    "symbol_first": true,
+                    "group_separator": ",",
+                    "currency_symbol": "$",
+                    "display_symbol": true
+                }
+            },
+            {
+                "id": "7e8abf2c-7be1-4855-8fd0-057b156a4889",
+                "name": "Trautmann Budget",
+                "last_modified_on": "2023-11-20T14:27:27Z",
+                "first_month": "2018-01-01",
+                "last_month": "2023-11-01",
+                "date_format": {
+                    "format": "MM/DD/YYYY"
+                },
+                "currency_format": {
+                    "iso_code": "USD",
+                    "example_format": "123,456.78",
+                    "decimal_digits": 2,
+                    "decimal_separator": ".",
+                    "symbol_first": true,
+                    "group_separator": ",",
+                    "currency_symbol": "$",
+                    "display_symbol": false
+                }
+            }
+        ],
+        "default_budget": null
+    }
+}

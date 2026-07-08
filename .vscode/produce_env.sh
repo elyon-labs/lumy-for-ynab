@@ -1,0 +1,1 @@
+echo "ENVIRONMENT=$(cat .vscode/.$1.env | base64)" > .vscode/.base64.$1.env

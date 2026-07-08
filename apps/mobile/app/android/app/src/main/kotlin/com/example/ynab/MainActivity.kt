@@ -1,0 +1,7 @@
+package com.brandontrautmann.lumy
+
+import io.flutter.embedding.android.FlutterFragmentActivity
+
+
+class MainActivity: FlutterFragmentActivity() {
+}

@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "echo_local_env",
+      "command": ".vscode/produce_env.sh",
+      "args": ["local"],
+      "type": "shell"
+    },
+    {
+      "label": "echo_dev_env",
+      "command": ".vscode/produce_env.sh",
+      "args": ["dev"],
+      "type": "shell"
+    },
+    {
+      "label": "echo_prod_env",
+      "command": ".vscode/produce_env.sh",
+      "args": ["prod"],
+      "type": "shell"
+    }
+  ]
+}

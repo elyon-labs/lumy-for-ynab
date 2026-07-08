@@ -1,0 +1,54 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.41.4"
+
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+      - name: Install Melos
+        run: dart pub global activate melos
+      - name: Install dependencies
+        run: melos bootstrap
+      - name: Verify Flutter formatting
+        run: melos run format:flutter:ci
+      - name: Verify Dart formatting
+        run: melos run format:dart:ci
+      - name: Analyze Flutter project source
+        run: melos run analyze:flutter:ci
+      - name: Analyze Dart project source
+        run: melos run analyze:dart:ci
+      - name: Run Flutter tests
+        run: melos run test:flutter:ci
+      - name: Run Dart tests
+        run: melos run test:dart:ci
+
+  marketing:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: marketing-site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: marketing-site/package-lock.json
+      - run: npm ci
+      - run: npm run build

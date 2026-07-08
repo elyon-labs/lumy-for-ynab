@@ -1,0 +1,65 @@
+---
+import StarRating from "./StarRating.astro";
+
+interface Props {
+	title: string;
+	body: string;
+	rating: number;
+	author: string;
+}
+
+const { title, body, rating, author } = Astro.props;
+---
+
+<li class="rating-card">
+	<StarRating rating={rating} />
+	<h2>
+		{title}
+	</h2>
+	<div class="author">
+		<p><em>{author}</em></p>
+	</div>
+	<p>
+		{body}
+	</p>
+</li>
+<style>
+	.rating-card {
+		list-style: none;
+		padding: calc(1.5rem - 1px);
+		background-color: #23262d;
+		background-image: none;
+		background-size: 400%;
+		border-radius: 7px;
+		background-position: 100%;
+		opacity: 0.8;
+		color: white;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+	}
+	.rating-card > a {
+		width: 100%;
+		text-decoration: none;
+		line-height: 1.4;
+		padding: calc(1.5rem - 1px);
+		border-radius: 8px;
+		color: white;
+		background-color: #23262d;
+		opacity: 0.8;
+	}
+	.author > p {
+		margin-top: 0;
+		margin-bottom: 0;
+		color: grey;
+		/* Smaller font size */
+		font-size: 1rem;
+	}
+	h2 {
+		margin: 0;
+		font-size: 1.25rem;
+		transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	p {
+		margin-top: 0.5rem;
+		margin-bottom: 0;
+	}
+</style>

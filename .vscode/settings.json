@@ -1,0 +1,55 @@
+{
+  "cSpell.words": [
+    "Blurple",
+    "Categorys",
+    "Cgry",
+    "Haeiou",
+    "Haiou",
+    "Insertable",
+    "Knowledges",
+    "Lumy",
+    "milliunits",
+    "Myyyy",
+    "Posthog",
+    "rxdart",
+    "subtransaction",
+    "subtransactions",
+    "syncfusion",
+    "txns",
+    "Uncategorized",
+    "unhide"
+  ],
+  "cSpell.ignorePaths": [
+    "package-lock.json",
+    "node_modules",
+    "vscode-extension",
+    ".git/objects",
+    ".vscode",
+    ".vscode-insiders",
+    "**/*.yaml"
+  ],
+  "deno.enable": true,
+  "deno.enablePaths": [
+    "apps/supabase/functions"
+  ], // only turn Deno on in this folder
+  "deno.lint": true,
+  "deno.unstable": [
+    "bare-node-builtins",
+    "byonm",
+    "sloppy-imports",
+    "unsafe-proto",
+    "webgpu",
+    "broadcast-channel",
+    "worker-options",
+    "cron",
+    "kv",
+    "ffi",
+    "fs",
+    "http",
+    "net"
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "chatgpt.openOnStartup": true
+}
