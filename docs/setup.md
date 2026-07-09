@@ -16,8 +16,7 @@ mise exec flutter@3.41.4 -- flutter pub get
 mise exec flutter@3.41.4 -- dart run build_runner build --delete-conflicting-outputs
 ```
 
-Feature flags are toggled locally from the in-app debug menu (Settings → Debug →
-Feature flags), so no external configuration is required to build or run.
+Feature flags are toggled locally from the in-app debug menu (Settings → Debug → Feature flags), so no external configuration is required to build or run.
 
 Create a local environment file with your own development values. The app expects the `ENVIRONMENT` dart define to contain a base64-encoded dotenv payload.
 
