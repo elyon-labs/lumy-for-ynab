@@ -13,6 +13,9 @@ import RatingCard from "../components/RatingCard.astro";
 	<main>
 		<h1><span class="text-gradient">Lumy</span> for YNAB.</h1>
 		<p class="subtitle">You've never YNAB'd like this.</p>
+		<a class="open-source-link" href="/open-source">
+			<span>Lumy is now open source. Tap to read more.</span>
+		</a>
 		<div class:list={["download-buttons"]}>
 			<a
 				href="https://apps.apple.com/app/6454931849"
@@ -136,6 +139,31 @@ import RatingCard from "../components/RatingCard.astro";
 	.subtitle {
 		display: flex;
 		justify-content: center;
+	}
+	.open-source-link {
+		display: flex;
+		width: fit-content;
+		margin: 0 auto 1.5rem;
+		padding: 0.7rem 1rem;
+		border: 1px solid rgba(var(--accent-light), 0.65);
+		border-radius: 8px;
+		color: white;
+		background: rgba(var(--accent), 0.14);
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.2;
+		text-align: center;
+		text-decoration: none;
+		transition:
+			background 150ms ease,
+			border-color 150ms ease,
+			transform 150ms ease;
+	}
+	.open-source-link:hover,
+	.open-source-link:focus-visible {
+		background: rgba(var(--accent), 0.24);
+		border-color: rgb(var(--accent-light));
+		transform: translateY(-1px);
 	}
 	h1 {
 		font-size: 4rem;
