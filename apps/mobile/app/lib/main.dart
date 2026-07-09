@@ -4,7 +4,6 @@ import 'package:app_links/app_links.dart';
 import 'package:dart_foundation/dart_foundation.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,8 +26,7 @@ import 'app/configure_mobile.dart' if (dart.library.html) 'app/configure_web.dar
 import 'app/di.dart';
 import 'app/environment/environment.dart';
 import 'app/error_reporting/error_reporter.dart';
-import 'app/firebase/feature_flags/feature_flags_cubit.dart';
-import 'app/firebase/feature_flags/initialize.dart';
+import 'app/feature_flags/feature_flags_cubit.dart';
 import 'app/logging.dart';
 import 'app/navigation/deep_link_handler.dart';
 import 'app/navigation/router.dart';
@@ -84,7 +82,6 @@ import 'features/spend_tracker/data/repositories/spend_trackers_repository.dart'
 import 'features/spend_tracker/presentation/flows/create_spend_tracker/state/create_spend_tracker_cubit.dart';
 import 'features/templates/data/api/transaction_templates_api.dart';
 import 'features/templates/data/repositories/transaction_templates_repository.dart';
-import 'firebase_options.dart';
 import 'networking/dependencies.dart';
 import 'persistence/drift/local_database.dart';
 import 'persistence/drift/shared.dart';
@@ -112,8 +109,6 @@ Future<void> main() async {
       // Register mappers globally
       MapperContainer.globals.use(const LocalDateMapper());
 
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
       final environment = parseEnvironment();
       final logger = environment.logger;
 
@@ -123,17 +118,18 @@ Future<void> main() async {
 
       await errorReporter!.initialize();
 
-      final featureFlagsCubit = FeatureFlagsCubit.create();
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final settings = Settings(sharedPreferences);
 
       // Globally enable stringify for Equatable
       EquatableConfig.stringify = true;
+
+      final featureFlagsCubit = FeatureFlagsCubit.create(settings: settings);
       if (featureFlagsCubit.state.isWidgetsEnabled) {
         await HomeWidget.setAppGroupId(appWidgetsGroupId);
       }
 
       final localDatabase = createPersistentDb(logger: logger);
-      final sharedPreferences = await SharedPreferences.getInstance();
-      final settings = Settings(sharedPreferences);
 
       final ynabAuthHelper = await createYnabAuthHelper(
         environment: environment,
@@ -159,8 +155,6 @@ Future<void> main() async {
         supabase,
         ynabAuthHelper,
       );
-
-      await initializeFeatureFlags();
 
       await $notifications().init();
 
@@ -208,7 +202,7 @@ Future<void> main() async {
         MainApp(
           router: router,
           preBuiltProviders: [BlocProvider.value(value: featureFlagsCubit)],
-          isWidgetsEnabled: featureFlagsCubit.state.isWidgetsEnabled,
+          featureFlagsCubit: featureFlagsCubit,
         ),
       );
     },
@@ -316,10 +310,10 @@ class MainApp extends HookWidget {
     super.key,
     required this.router,
     required this.preBuiltProviders,
-    required this.isWidgetsEnabled,
+    required this.featureFlagsCubit,
   });
 
-  final bool isWidgetsEnabled;
+  final FeatureFlagsCubit featureFlagsCubit;
   final List<SingleChildWidget> preBuiltProviders;
   final GoRouter router;
 
@@ -331,7 +325,7 @@ class MainApp extends HookWidget {
         Provider<HasNotificationPermissions>(create: (_) => $notifications().hasPermission),
         // App Cubits
         BlocProvider(create: (_) => AppStateCubit.create()),
-        BlocProvider(create: (_) => FeatureFlagsCubit.create()),
+        BlocProvider.value(value: featureFlagsCubit),
         BlocProvider(create: (_) => UserIdFetchCubit.create()),
         BlocProvider(create: (_) => BudgetsFetchCubit.create()),
         BlocProvider(create: (_) => CategoriesFetchCubit.create()),
@@ -343,9 +337,11 @@ class MainApp extends HookWidget {
         BlocProvider(create: (_) => CurrencyFormatCubit.create()),
         BlocProvider(create: (_) => SelectedDateRangeCubit.create()),
         BlocProvider(create: (_) => ChartSettingsCubit.create()),
-        if (isWidgetsEnabled)
+        if (featureFlagsCubit.state.isWidgetsEnabled)
           BlocProvider(
-            create: (_) => UpdateMetricsWidgetsCubit.create(isEnabled: isWidgetsEnabled),
+            create: (_) => UpdateMetricsWidgetsCubit.create(
+              isEnabled: featureFlagsCubit.state.isWidgetsEnabled,
+            ),
           ),
         // Chart & Reports Cubits
         BlocProvider(create: (_) => IncomeExpenseReportCubit.create()),

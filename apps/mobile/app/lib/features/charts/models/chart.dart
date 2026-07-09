@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
-import '../../../app/firebase/feature_flags/feature_flags_cubit.dart';
+import '../../../app/feature_flags/feature_flags_cubit.dart';
 import '../../../common/domain/accounts/filters.dart';
 import 'chart_type.dart';
 

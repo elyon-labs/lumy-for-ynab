@@ -24,6 +24,5 @@ printf 'ENVIRONMENT=%s\n' "$(base64 < "${source_env_file}" | tr -d '\n')" > "${e
 echo "Running Flutter with ${encoded_env_file}"
 cd "${app_dir}"
 exec flutter run \
-  -d BDFC33C3-B8F5-4C60-A846-8092B45DB627 \
   --target lib/main.dart \
   --dart-define-from-file="${encoded_env_file}"

@@ -16,7 +16,8 @@ mise exec flutter@3.41.4 -- flutter pub get
 mise exec flutter@3.41.4 -- dart run build_runner build --delete-conflicting-outputs
 ```
 
-`lib/firebase_options.dart` contains placeholder values in the public repo. Replace them with options from your own Firebase project before running Firebase-backed features.
+Feature flags are toggled locally from the in-app debug menu (Settings → Debug →
+Feature flags), so no external configuration is required to build or run.
 
 Create a local environment file with your own development values. The app expects the `ENVIRONMENT` dart define to contain a base64-encoded dotenv payload.
 
