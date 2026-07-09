@@ -6,7 +6,6 @@ import 'package:universal_platform/universal_platform.dart';
 import '../../persistence/settings.dart';
 import '../../utils/_cubit.dart';
 import '../../utils/flutter.dart';
-import '../di.dart';
 
 /// A client-side feature flag.
 ///
