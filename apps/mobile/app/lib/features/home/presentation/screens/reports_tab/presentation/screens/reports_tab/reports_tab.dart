@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../../../../../../app/di.dart';
-import '../../../../../../../../app/firebase/feature_flags/feature_flags_cubit.dart';
+import '../../../../../../../../app/feature_flags/feature_flags_cubit.dart';
 import '../../../../../../../../common/domain/budgets/budgets_repository.dart';
 import '../../../../../../../../common/presentation/design_system/_build_context.dart';
 import '../../../../../../../../common/presentation/design_system/app_screen.dart';

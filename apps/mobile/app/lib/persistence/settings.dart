@@ -585,6 +585,19 @@ class Settings {
   Future<void> clear() {
     return _prefs.clear();
   }
+
+  // Feature flags
+  //
+  // Flags are stored as plain booleans keyed by [FeatureFlag.preferenceKey].
+  // A missing value (null) means the flag has never been toggled and the
+  // caller should fall back to the flag's default.
+  ValueStream<bool?> watchFeatureFlag(String preferenceKey) {
+    return _prefs.getBoolStream(preferenceKey).shareValue();
+  }
+
+  Future<void> setFeatureFlag(String preferenceKey, bool value) {
+    return _prefs.setBool(preferenceKey, value);
+  }
 }
 
 extension AppSettingsX on Settings {

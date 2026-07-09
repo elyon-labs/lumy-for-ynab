@@ -36,9 +36,6 @@ dependencies:
   drift_flutter: ^0.2.2
   equatable: ^2.0.5
   file_picker: ^8.0.7
-  firebase_app_installations: ^0.3.3
-  firebase_core: ^3.15.2
-  firebase_remote_config: ^5.5.0
   flutter:
     sdk: flutter
   flutter_animate: ^4.5.0
@@ -62,7 +59,7 @@ dependencies:
   keyboard_actions: ^4.2.1
   logger: ^2.3.0
   markdown_widget: ^2.3.2+8
-  material_color_utilities: ^0.11.1
+  material_color_utilities: ^0.13.0
   meta: ^1.12.0
   money2: ^4.1.0
   oxidized: ^6.1.0

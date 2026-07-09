@@ -17,7 +17,6 @@ import '../../../../../../../../common/presentation/design_system/list_row.dart'
 import '../../../../../../../../common/presentation/design_system/section_body.dart';
 import '../../../../../../../../common/presentation/modals/_build_context.dart';
 import '../../../../../../../../common/presentation/modals/dialog_action_button.dart';
-import '../../../../../../../../utils/_build_context.dart';
 import '../../../../../../../../utils/_local_date.dart';
 import '../../../../../../../../ynab_api/_budget.dart';
 import '../../../../../../../about/presentation/screens/about_app_screen/about_app_screen.dart';
@@ -44,10 +43,6 @@ class SettingsTab extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final darkModeTappedTimes = useState(0);
-    final hasShownDebugSnackBar = useState(false);
-    const showDebugThreshold = 9;
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => SettingsTabCubit.create()),
@@ -86,17 +81,8 @@ class SettingsTab extends HookWidget {
                           spacing: Sizes.unit * 3,
                           children: [
                             const _DataSection(),
-                            _AppearanceSection(
-                              themeMode: state.themeMode,
-                              darkModeTappedTimes: darkModeTappedTimes,
-                              showDebugThreshold: showDebugThreshold,
-                              hasShownDebugSnackBar: hasShownDebugSnackBar,
-                            ),
-                            _LumySection(
-                              whatsNewState: whatsNewState,
-                              darkModeTappedTimes: darkModeTappedTimes,
-                              showDebugThreshold: showDebugThreshold,
-                            ),
+                            _AppearanceSection(themeMode: state.themeMode),
+                            _LumySection(whatsNewState: whatsNewState),
                             const _AccountSection(),
                           ],
                         ),
@@ -223,17 +209,9 @@ class _DataSection extends StatelessWidget {
 }
 
 class _AppearanceSection extends StatelessWidget {
-  const _AppearanceSection({
-    required this.themeMode,
-    required this.darkModeTappedTimes,
-    required this.showDebugThreshold,
-    required this.hasShownDebugSnackBar,
-  });
+  const _AppearanceSection({required this.themeMode});
 
   final ThemeMode themeMode;
-  final ValueNotifier<int> darkModeTappedTimes;
-  final int showDebugThreshold;
-  final ValueNotifier<bool> hasShownDebugSnackBar;
 
   @override
   Widget build(BuildContext context) {
@@ -257,19 +235,7 @@ class _AppearanceSection extends StatelessWidget {
               title: Text(modeName),
               leading: icon,
               trailing: const Icon(Ionicons.checkmark_circle_outline).visible(themeMode == mode),
-              onTap: () async {
-                $settings().setThemeMode(mode);
-                if (mode == ThemeMode.dark) {
-                  darkModeTappedTimes.value++;
-                  if (darkModeTappedTimes.value > showDebugThreshold &&
-                      !hasShownDebugSnackBar.value) {
-                    if (context.mounted) {
-                      context.showToast(const Text('Debug mode enabled'));
-                      hasShownDebugSnackBar.value = true;
-                    }
-                  }
-                }
-              },
+              onTap: () => $settings().setThemeMode(mode),
             );
           }).toList(),
         ),
@@ -279,15 +245,9 @@ class _AppearanceSection extends StatelessWidget {
 }
 
 class _LumySection extends StatelessWidget {
-  const _LumySection({
-    required this.whatsNewState,
-    required this.darkModeTappedTimes,
-    required this.showDebugThreshold,
-  });
+  const _LumySection({required this.whatsNewState});
 
   final WhatsNewState whatsNewState;
-  final ValueNotifier<int> darkModeTappedTimes;
-  final int showDebugThreshold;
 
   @override
   Widget build(BuildContext context) {
@@ -322,12 +282,11 @@ class _LumySection extends StatelessWidget {
               leading: const Icon(Ionicons.information_circle_outline),
               onTap: () => GoRouter.of(context).go(AboutAppScreen.route),
             ),
-            if (darkModeTappedTimes.value >= showDebugThreshold)
-              ListRow(
-                title: const Text('Debug'),
-                leading: const Icon(Ionicons.bug_outline),
-                onTap: () => GoRouter.of(context).go(DebugScreen.route),
-              ),
+            ListRow(
+              title: const Text('Debug'),
+              leading: const Icon(Ionicons.bug_outline),
+              onTap: () => GoRouter.of(context).go(DebugScreen.route),
+            ),
           ],
         ),
       ],

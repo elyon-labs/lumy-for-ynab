@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart';
 
 import '../../../../../../../app/di.dart';
-import '../../../../../../../app/firebase/installation/install_id.dart';
 import '../../../../../../../common/presentation/design_system/app_screen.dart';
 import '../../../../../../../common/presentation/design_system/list_row.dart';
 import '../../../../../../../common/presentation/design_system/section_body.dart';
@@ -18,16 +18,16 @@ import '../../../../../../../persistence/settings.dart';
 import '../../../../../../../utils/_build_context.dart';
 import '../../../../../../../utils/_cubit.dart';
 import '../../../../../../notifications/notifications.dart';
+import 'feature_flags_screen.dart';
 import 'feedback/feedback_options_screen.dart';
 
 class DebugScreenState {
-  DebugScreenState({required this.installId, required this.prefs});
+  DebugScreenState({required this.prefs});
 
   factory DebugScreenState.initial() {
-    return DebugScreenState(installId: '', prefs: {});
+    return DebugScreenState(prefs: {});
   }
 
-  final String installId;
   final Map<String, Object?> prefs;
 }
 
@@ -46,15 +46,7 @@ class DebugScreenCubit extends Cubit<DebugScreenState> {
   final subs = CompositeSubscription();
 
   void fetch() {
-    final installId = firebaseInstallId();
-    final prefs = settings.watchAll();
-    subs.add(
-      Rx.combineLatest2(
-        installId,
-        prefs,
-        (a, b) => DebugScreenState(installId: a, prefs: b),
-      ).listen(safeEmit),
-    );
+    subs.add(settings.watchAll().listen((prefs) => safeEmit(DebugScreenState(prefs: prefs))));
   }
 
   Future<void> deleteTransactions() async {
@@ -90,7 +82,7 @@ class DebugScreen extends HookWidget {
             spacing: Sizes.unit * 3,
             children: [
               const VSpace(),
-              const _UserExperienceSection(),
+              const _FeatureFlagsSection(),
               BlocBuilder<DebugScreenCubit, DebugScreenState>(
                 builder: (context, state) {
                   final prefsRows = state.prefs.entries.map<Widget>((e) {
@@ -131,23 +123,20 @@ class DebugScreen extends HookWidget {
   }
 }
 
-class _UserExperienceSection extends StatelessWidget {
-  const _UserExperienceSection();
+class _FeatureFlagsSection extends StatelessWidget {
+  const _FeatureFlagsSection();
 
   @override
   Widget build(BuildContext context) {
     return VLayout(
       children: [
-        const HEdgePadding(child: SectionHeader('USER EXPERIENCE')),
+        const HEdgePadding(child: SectionHeader('FEATURE FLAGS')),
         ListSection(
           children: [
-            BlocBuilder<DebugScreenCubit, DebugScreenState>(
-              builder: (context, state) {
-                return ListRow(
-                  title: const Text('Firebase: Install Id'),
-                  subtitle: SelectableText(state.installId),
-                );
-              },
+            ListRow(
+              title: const Text('Feature flags'),
+              subtitle: const Text('Enable or disable in-development features.'),
+              onTap: () => GoRouter.of(context).go(FeatureFlagsScreen.route),
             ),
           ],
         ),

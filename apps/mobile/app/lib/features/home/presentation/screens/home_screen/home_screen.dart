@@ -9,9 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:oxidized/oxidized.dart';
 import 'package:provider/provider.dart';
-import 'package:universal_platform/universal_platform.dart';
 
-import '../../../../../app/firebase/feature_flags/_build_context.dart';
 import '../../../../../common/domain/accounts/accounts_fetch_cubit.dart';
 import '../../../../../common/domain/budgets/budgets_fetch_cubit.dart';
 import '../../../../../common/domain/categories/categories_fetch_cubit.dart';
@@ -28,7 +26,6 @@ import '../../../../../common/presentation/design_system/side_navigation_menu.da
 import '../../../../../common/presentation/error/error_screen.dart';
 import '../../../../../common/presentation/lifecycle_listener.dart';
 import '../../../../../utils/_date_time.dart';
-import '../../../../min_version/presentation/screens/min_version_screen/min_version_screen.dart';
 import '../../../../sync/presentation/screens/sync_screen/sync_screen.dart';
 import '../../../../whats_new/state/whats_new_state.dart';
 import '../budget_tab/presentation/screens/budget_tab/widgets/initial_fetch_view.dart';
@@ -59,14 +56,7 @@ class _Body extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final performingInitialFetch = context.watch<TransactionsFetchCubit>().state.isInitialFetch;
-    final minimumVersion = context.featureFlags.minimumSupportedVersion;
-    final appVersion = context.select((HomeScreenCubit cubit) => cubit.state.appVersion);
-    final isForceUpgradeRequired = UniversalPlatform.isMobile && appVersion < minimumVersion;
     final budgetId = context.select((HomeScreenCubit cubit) => cubit.state.budgetId);
-
-    if (isForceUpgradeRequired) {
-      return const MinVersionScreen();
-    }
 
     if (performingInitialFetch) return const InitialFetchView();
 
