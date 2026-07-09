@@ -19,7 +19,6 @@ import '../../../../../../../utils/_build_context.dart';
 import '../../../../../../../utils/_cubit.dart';
 import '../../../../../../notifications/notifications.dart';
 import 'feature_flags_screen.dart';
-import 'feedback/feedback_options_screen.dart';
 
 class DebugScreenState {
   DebugScreenState({required this.prefs});
@@ -306,8 +305,7 @@ class TestNotification implements LocalNotification {
   String get id => 'test_notification';
 
   @override
-  NotificationPayload get payload =>
-      NotificationPayload(destination: FeedbackOptionsScreen.buildRoute());
+  NotificationPayload get payload => NotificationPayload(destination: FeatureFlagsScreen.route);
 
   @override
   String get title => 'Test Notification';

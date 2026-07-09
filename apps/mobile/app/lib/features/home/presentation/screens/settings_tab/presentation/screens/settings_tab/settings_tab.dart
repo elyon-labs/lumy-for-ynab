@@ -30,7 +30,6 @@ import '../../../../home_screen/home_screen.dart';
 import '../category_view_list_screen/category_views_list_screen.dart';
 import '../charts/charts_settings_screen.dart';
 import '../debug_screen.dart';
-import '../feedback/feedback_options_screen.dart';
 import '../spend_tracker_ordering_screen/spend_tracker_ordering_screen.dart';
 import 'settings_tab_cubit.dart';
 import 'settings_tab_state.dart';
@@ -267,7 +266,10 @@ class _LumySection extends StatelessWidget {
             ListRow(
               title: const Text('Get help'),
               leading: const Icon(Ionicons.help_buoy_outline),
-              onTap: () => GoRouter.of(context).go(FeedbackOptionsScreen.buildRoute()),
+              onTap: () async {
+                final url = Uri.parse('https://github.com/elyon-labs/lumy-for-ynab/issues/new');
+                await launchUrl(url);
+              },
             ),
             ListRow(
               title: const Text('Join the community'),

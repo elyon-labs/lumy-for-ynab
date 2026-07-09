@@ -1,6 +1,6 @@
 ## TODO
 
-List small items here that aren't big enough to be tracked in Canny:
+List small items here that aren't big enough to be tracked in GitHub issues:
 
 - [ ] Document colors
 - [ ] Add more colors for pie charts

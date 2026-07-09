@@ -17,12 +17,6 @@ class FakeEnvironment implements Environment {
   String get communityServerUrl => throw UnimplementedError();
 
   @override
-  String get feedbackBoardUrl => throw UnimplementedError();
-
-  @override
-  String get feedbackWebhook => throw UnimplementedError();
-
-  @override
   String get mobileDeeplinkUri => throw UnimplementedError();
 
   @override

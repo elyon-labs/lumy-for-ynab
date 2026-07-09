@@ -20,7 +20,7 @@
 
 **Fixes:**
 - Fixes an issue where the circular "avatar" shown for category and transaction rows would display an error symbol when the category or transaction payee name began with an emoji.
-- Fixes an issue that prevented users from accessing the Canny board to provide feedback or report bugs.
+- Fixes an issue that prevented users from accessing the feedback board to provide feedback or report bugs.
 
 **Improvements:**
 - Increases the reliability of creating spend trackers, category views, frugal months, and transaction templates by ensuring that if an error occurs during creation, the entire procedure is aborted, rather than half-baked data being saved.
@@ -54,18 +54,18 @@
 ## 1.23.7
 
 **Fixes:**
-- Fixes an issue where the Target Health Report was not updating when changing budgets. This was reported [here](https://lumyforynab.canny.io/features-and-bugs/p/targets-health-didnt-refresh-for-selected-budget).
+- Fixes an issue where the Target Health Report was not updating when changing budgets.
 - The Choose Period bottom sheet now closes after a period is selected. This better conforms to how other bottom sheets behave in the app.
 
 ## 1.23.6
 
 **New:**
 
-- Adds the ability to quickly see over-spending for categories and category groups in the Budget Burndown. Previously, over-spending was not shown and a $0 remaining balance was shown instead. This was requested [here](https://lumyforynab.canny.io/features-and-bugs/p/show-overspending-in-budget).
+- Adds the ability to quickly see over-spending for categories and category groups in the Budget Burndown. Previously, over-spending was not shown and a $0 remaining balance was shown instead.
 
 **Fixes:**
-- Ensures that changes to category group names are reflected immediately. This was previously not happening due to a YNAB API limitation, but we added a workaround to ensure a better user experience. This was tracked [here](https://lumyforynab.canny.io/features-and-bugs/p/category-group-name-changes-not-sent-back-in-delta-requests).
-- Ensures the ordering of category groups and their categories matches what you see in YNAB. Previously, ordering in Lumy only matched that of YNAB until you changed the order in YNAB. This is because the YNAB API does not communicate ordering changes in delta requests, which Lumy makes use of. Now, categories are pulled fresh and so the ordering can be respected. This was tracked [here](https://lumyforynab.canny.io/features-and-bugs/p/category-group-name-changes-not-sent-back-in-delta-requests).
+- Ensures that changes to category group names are reflected immediately. This was previously not happening due to a YNAB API limitation, but we added a workaround to ensure a better user experience.
+- Ensures the ordering of category groups and their categories matches what you see in YNAB. Previously, ordering in Lumy only matched that of YNAB until you changed the order in YNAB. This is because the YNAB API does not communicate ordering changes in delta requests, which Lumy makes use of. Now, categories are pulled fresh and so the ordering can be respected.
 - Fixes an issue where transactions created via templates were always inflows, even if they were configured as outflows.
 
 ## 1.23.2
@@ -99,7 +99,7 @@ There are a lot of other use cases I'm sure, and maybe ones that we don't yet su
 
 - Design updates across the application to simplify the design system and make it simpler to introduce new UI
 - Added the ability to sort the Recurring Transaction (by Payee) report alphabetically and by amount in both ascending and descending fashion.
-- Report periods are now "trailing", meaning if you select, for example, the Latest 3 Months Period in December, you will initially see reporting for October, November, and December. However, on Jan 1, you will start seeing reporting for November, December, and January without needing to re-select Latest 3 Months like you would've had to do prior to this change. This was one of the primary changes as a result of [this ticket](https://lumyforynab.canny.io/features-and-bugs/p/timeframe-chooser-improvements).
+- Report periods are now "trailing", meaning if you select, for example, the Latest 3 Months Period in December, you will initially see reporting for October, November, and December. However, on Jan 1, you will start seeing reporting for November, December, and January without needing to re-select Latest 3 Months like you would've had to do prior to this change.
 - The Frugal Month Section on the Budget Tab now highlights the Left to Spend amount instead of the status. The status can be seen by tapping the Frugal Month tile. Additionally, when a Frugal Month is active, it shows above the Spent this Month section.
 
 **Fixes**
@@ -138,7 +138,7 @@ A bit of design work was done to offer more real estate to visuals like charts.
 
 ## 1.20.0
 
-- The Spend by Category Pie chart now shows percentages of total spend for both category groups and categories for the selected timeframe and Category View. It also preserves the ability to "dive in" by tapping a category group. When doing that, the percentage shown for each category is the percentage of spend of the selected category group. This is similar (maybe even identical) to how it works natively in YNAB's Reflect report. This was requested in [this ticket](https://lumyforynab.canny.io/features-and-bugs/p/show-percentages-in-spend-by-category-group).
+- The Spend by Category Pie chart now shows percentages of total spend for both category groups and categories for the selected timeframe and Category View. It also preserves the ability to "dive in" by tapping a category group. When doing that, the percentage shown for each category is the percentage of spend of the selected category group. This is similar (maybe even identical) to how it works natively in YNAB's Reflect report.
 - Similar to the above, the Spend by Payee Pie chart now shows percentages of total spend for the selected timeframe and Category View.
 - Fixes a bug where some charts weren't getting the memo about an updated Category View and were sticking with the old one.
 

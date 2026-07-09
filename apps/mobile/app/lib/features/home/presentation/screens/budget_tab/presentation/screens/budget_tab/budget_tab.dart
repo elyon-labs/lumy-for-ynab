@@ -136,7 +136,7 @@ class _WebBetaAction extends StatelessWidget {
           title: const Text('Lumy Web is in Beta'),
           body: const Markdown(
             data:
-                'Lumy Web is currently in beta. Issues are expected. Known issues are tracked [here](https://lumyforynab.canny.io/features-and-bugs/p/deploy-lumy-as-a-web-app). Find something else? Drop a comment on the ticket or reach out in Discord. ',
+                'Lumy Web is currently in beta. Issues are expected. Known issues are tracked in GitHub issues. Find something else? Open an issue or reach out in Discord. ',
           ),
           buttons: [DialogActionButton(text: 'Close')],
         );
