@@ -59,7 +59,7 @@ dependencies:
   keyboard_actions: ^4.2.1
   logger: ^2.3.0
   markdown_widget: ^2.3.2+8
-  material_color_utilities: ^0.11.1
+  material_color_utilities: ^0.13.0
   meta: ^1.12.0
   money2: ^4.1.0
   oxidized: ^6.1.0
