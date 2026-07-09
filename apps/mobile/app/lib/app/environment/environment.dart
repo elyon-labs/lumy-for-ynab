@@ -13,8 +13,6 @@ class Environment {
     required this.webDeeplinkUri,
     required this.clientId,
     required this.ynabBaseUrl,
-    required this.feedbackBoardUrl,
-    required this.feedbackWebhook,
     required this.communityServerUrl,
     required this.androidStoreUrl,
     required this.iosStoreUrl,
@@ -33,8 +31,6 @@ class Environment {
       webDeeplinkUri: env.get('WEB_DEEPLINK_URI'),
       clientId: env.get('CLIENT_ID'),
       ynabBaseUrl: env.get('YNAB_BASE_URL'),
-      feedbackBoardUrl: env.get('FEEDBACK_BOARD_URL'),
-      feedbackWebhook: env.get('FEEDBACK_WEBHOOK'),
       communityServerUrl: env.get('COMMUNITY_SERVER_URL'),
       androidStoreUrl: env.get('ANDROID_STORE_URL'),
       iosStoreUrl: env.get('IOS_STORE_URL'),
@@ -52,8 +48,6 @@ class Environment {
   final String webDeeplinkUri;
   final String clientId;
   final String ynabBaseUrl;
-  final String feedbackBoardUrl;
-  final String feedbackWebhook;
   final String communityServerUrl;
   final String androidStoreUrl;
   final String iosStoreUrl;

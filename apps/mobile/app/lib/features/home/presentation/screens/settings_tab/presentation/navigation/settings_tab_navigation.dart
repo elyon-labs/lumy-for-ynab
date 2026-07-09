@@ -14,7 +14,6 @@ import '../screens/category_view_details_screen/category_view_details_screen.dar
 import '../screens/category_view_list_screen/category_views_list_screen.dart';
 import '../screens/debug_screen.dart';
 import '../screens/feature_flags_screen.dart';
-import '../screens/feedback/feedback_options_screen.dart';
 import '../screens/spend_tracker_ordering_screen/spend_tracker_ordering_screen.dart';
 import 'settings_chart_settings_route.dart';
 import 'settings_frugal_month_details_route.dart';
@@ -30,7 +29,6 @@ List<RouteBase> SettingsTabRoutes() {
       builder: (context, state) => const SpendTrackerOrderingScreen(),
     ),
     GoRoute(path: 'whats_new', builder: (context, state) => const WhatsNewScreen()),
-    GoRoute(path: 'feedback_options', builder: (context, state) => const FeedbackOptionsScreen()),
     GoRoute(path: 'debug', builder: (context, state) => const DebugScreen()),
     GoRoute(path: 'feature_flags', builder: (context, state) => const FeatureFlagsScreen()),
     GoRoute(path: 'about', builder: (context, state) => const AboutAppScreen()),
