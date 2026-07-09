@@ -1,7 +1,7 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: "[BUG]"
+about: Report something that is not working correctly
+title: "[BUG] "
 labels: bug
 assignees: ''
 
@@ -13,8 +13,8 @@ A clear and concise description of what the bug is.
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
+2. Tap/click on '...'
+3. Scroll down to '...'
 4. See error
 
 **Expected behavior**
@@ -23,9 +23,10 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - Platform [e.g Android or iOS]
- - Version [e.g. 22]
+**Environment (please complete the following information):**
+- Platform [e.g. Android, iOS, or web]
+- App version [e.g. 1.25.0]
+- OS/browser version [e.g. iOS 18.5, Android 15, Chrome 126]
 
 **Additional context**
 Add any other context about the problem here.
