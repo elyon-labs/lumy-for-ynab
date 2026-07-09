@@ -24,12 +24,6 @@ class HomeScreenStateMapper extends ClassMapperBase<HomeScreenState> {
   static Async<Option<String>> _$budgetId(HomeScreenState v) => v.budgetId;
   static const Field<HomeScreenState, Async<Option<String>>> _f$budgetId =
       Field('budgetId', _$budgetId, key: r'budget_id');
-  static Version _$appVersion(HomeScreenState v) => v.appVersion;
-  static const Field<HomeScreenState, Version> _f$appVersion = Field(
-    'appVersion',
-    _$appVersion,
-    key: r'app_version',
-  );
   static bool _$hasUnsyncedData(HomeScreenState v) => v.hasUnsyncedData;
   static const Field<HomeScreenState, bool> _f$hasUnsyncedData = Field(
     'hasUnsyncedData',
@@ -40,14 +34,12 @@ class HomeScreenStateMapper extends ClassMapperBase<HomeScreenState> {
   @override
   final MappableFields<HomeScreenState> fields = const {
     #budgetId: _f$budgetId,
-    #appVersion: _f$appVersion,
     #hasUnsyncedData: _f$hasUnsyncedData,
   };
 
   static HomeScreenState _instantiate(DecodingData data) {
     return HomeScreenState(
       budgetId: data.dec(_f$budgetId),
-      appVersion: data.dec(_f$appVersion),
       hasUnsyncedData: data.dec(_f$hasUnsyncedData),
     );
   }
@@ -114,11 +106,7 @@ extension HomeScreenStateValueCopy<$R, $Out>
 
 abstract class HomeScreenStateCopyWith<$R, $In extends HomeScreenState, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({
-    Async<Option<String>>? budgetId,
-    Version? appVersion,
-    bool? hasUnsyncedData,
-  });
+  $R call({Async<Option<String>>? budgetId, bool? hasUnsyncedData});
   HomeScreenStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
   );
@@ -133,21 +121,15 @@ class _HomeScreenStateCopyWithImpl<$R, $Out>
   late final ClassMapperBase<HomeScreenState> $mapper =
       HomeScreenStateMapper.ensureInitialized();
   @override
-  $R call({
-    Async<Option<String>>? budgetId,
-    Version? appVersion,
-    bool? hasUnsyncedData,
-  }) => $apply(
+  $R call({Async<Option<String>>? budgetId, bool? hasUnsyncedData}) => $apply(
     FieldCopyWithData({
       if (budgetId != null) #budgetId: budgetId,
-      if (appVersion != null) #appVersion: appVersion,
       if (hasUnsyncedData != null) #hasUnsyncedData: hasUnsyncedData,
     }),
   );
   @override
   HomeScreenState $make(CopyWithData data) => HomeScreenState(
     budgetId: data.get(#budgetId, or: $value.budgetId),
-    appVersion: data.get(#appVersion, or: $value.appVersion),
     hasUnsyncedData: data.get(#hasUnsyncedData, or: $value.hasUnsyncedData),
   );
 
