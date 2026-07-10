@@ -1,6 +1,13 @@
 # Lumy
 
-Lumy is a free and open-source Flutter app for YNAB users. It includes the mobile app, a Supabase local/backend project, a Dart OAuth token server, and an Astro marketing site.
+Lumy is a free and open-source Flutter app for YNAB users. This repository includes the mobile app, a Supabase local/backend project, and a Dart OAuth token server.
+
+## Donations
+
+[![Buy Me A Coffee](https://shields.io)](https://buymeacoffee.com/btrautmann)
+
+If you would like to support Lumy, you can make a donation [here](https://www.buymeacoffee.com/btrautmann).
+
 
 ## Project Structure
 
