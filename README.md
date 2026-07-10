@@ -4,9 +4,7 @@ Lumy is a free and open-source Flutter app for YNAB users. This repository inclu
 
 ## Donations
 
-<a href="https://buymeacoffee.com/btrautmann">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="136">
-</a>
+[![Buy Me A Coffee](docs/assets/buy-me-a-coffee.png)](https://buymeacoffee.com/btrautmann)
 
 If you would like to support Lumy, you can make a donation [here](https://www.buymeacoffee.com/btrautmann).
 
