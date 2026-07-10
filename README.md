@@ -1,5 +1,9 @@
 # Lumy
 
+<p align="center">
+  <img src="docs/assets/lumy-icon.png" alt="Lumy app icon">
+</p>
+
 Lumy is a free and open-source Flutter app for YNAB users. This repository includes the mobile app, a Supabase local/backend project, and a Dart OAuth token server.
 
 ## Donations
