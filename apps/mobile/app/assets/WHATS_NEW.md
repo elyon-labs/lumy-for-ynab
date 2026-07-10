@@ -1,3 +1,9 @@
+## 1.26.0
+
+Lumy is now free and open source! You can read more [here](https://lumyforynab.app/open-source).
+
+If you are a subscriber, you will no longer be charged and will continue to have access to all of Lumy's features. If you would like to support Lumy, you can make a donation [here](https://www.buymeacoffee.com/btrautmann).
+
 ## 1.25.0
 
 **Features:**
