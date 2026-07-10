@@ -22,17 +22,19 @@ Fast forward a couple years and we've increased our child count by 33%, and I st
 
 Since starting Lumy, YNAB has also changed quite a bit. The addition of the Reflect tab, while not as fully featured as Lumy, has given me just enough information on mobile to (mostly) satisfy my needs. There are still gaps, however. I use Lumy's advanced spend trackers quite a bit to keep tabs on spending that doesn't quite fit nicely into a single category. I use its target health report to assess how accurate my targets are and I adjust them on an annual basis. For those reasons and more, I definitely still believe Lumy has a place in the YNAB ecosystem. I just find that I open Lumy less than I used to, and that change has made me personally less driven to continue to add features. I've always believed that the best way to write software is to add the things you want to use most, as it aligns your passions/needs with the software. By opening Lumy up for external contributions, my hope is that the broader comumnity will apply this same philosophy and continue to make Lumy a great experience for all users.
 
-### What this changes for users
+## What this changes for users
 
 Lumy will continue to be free by default. Users who never subscribed will now be able to use Lumy without any limitations. Subscribers will no longer be charged, and will continue to have all of Lumy's features available. Because the bar for the software's quality will remain high, regardless of who contributes, my hope is that Lumy will continue to remain stable and usable for all.
 
-### Costs going forward
+## Costs going forward
 
-With users no longer being charged, I will be responsible for covering the costs of running Lumy. I have been fortunate to have a few subscribers
-Expected topics to cover:
+With users no longer being charged, I will be responsible for covering the costs of running Lumy. If you're a subscriber and would like to continue supporting Lumy, you can always make a donation [here](https://www.buymeacoffee.com/btrautmann).
 
-- Why opening the source fits Lumy's future.
-- What this changes for users.
-- What this changes for contributors.
-- How privacy, security, and app stewardship will continue to work.
-- Where to find the source code and how to get involved.
+## How to contribute
+
+If you're interested in contributing to Lumy, you can find the source code on [GitHub](https://github.com/elyon-labs/lumy-for-ynab). Please read the [CONTRIBUTING.md](https://github.com/elyon-labs/lumy-for-ynab/blob/main/CONTRIBUTING.md) before opening a pull request.
+
+
+## Thank you
+
+I want to thank all of Lumy's users for their support over the years. I hope that this change will allow Lumy to continue to be a great experience for all users, and I look forward to seeing what the community can do with it.
