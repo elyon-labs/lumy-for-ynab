@@ -1,8 +1,10 @@
+import 'package:drift/drift.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumy/persistence/drift/local_database.dart';
 
 import '../generated_migrations/schema.dart';
+import '../generated_migrations/schema_v14.dart' as v14;
 
 void main() {
   late SchemaVerifier verifier;
@@ -14,7 +16,7 @@ void main() {
   });
 
   group('Database', () {
-    for (final version in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
+    for (final version in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]) {
       test('upgrade from v$version to v${version + 1}', () async {
         final connection = await verifier.startAt(version);
         final db = LocalDatabase(connection);
@@ -22,5 +24,60 @@ void main() {
         await verifier.migrateAndValidate(db, version + 1);
       });
     }
+
+    test('v15 invalidates transaction knowledge without deleting cached transactions', () async {
+      driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+      addTearDown(() {
+        driftRuntimeOptions.dontWarnAboutMultipleDatabases = false;
+      });
+
+      final schema = await verifier.schemaAt(14);
+      addTearDown(schema.close);
+      final oldDatabase = v14.DatabaseAtV14(schema.newConnection());
+      await oldDatabase.customStatement(
+        '''
+        INSERT INTO db_transactions
+          (uuid, budget_id, amount, date, account_id, is_deleted)
+        VALUES
+          (?, ?, ?, ?, ?, ?),
+          (?, ?, ?, ?, ?, ?)
+        ''',
+        [
+          'budget-1-transaction',
+          'budget-1',
+          1000,
+          '2026-01-01',
+          'account-1',
+          false,
+          'budget-2-transaction',
+          'budget-2',
+          2000,
+          '2026-01-02',
+          'account-2',
+          false,
+        ],
+      );
+      await oldDatabase.customStatement(
+        '''
+        INSERT INTO db_transaction_knowledges (budget_id, knowledge)
+        VALUES (?, ?), (?, ?)
+        ''',
+        ['budget-1', 10, 'budget-2', 20],
+      );
+      await oldDatabase.close();
+
+      final database = LocalDatabase(schema.newConnection());
+      addTearDown(database.close);
+      await verifier.migrateAndValidate(database, 15);
+
+      final transactions = await database.select(database.dbTransactions).get();
+      final knowledges = await database.select(database.dbTransactionKnowledges).get();
+
+      expect(
+        transactions.map((transaction) => transaction.uuid),
+        unorderedEquals(['budget-1-transaction', 'budget-2-transaction']),
+      );
+      expect(knowledges, isEmpty);
+    });
   });
 }

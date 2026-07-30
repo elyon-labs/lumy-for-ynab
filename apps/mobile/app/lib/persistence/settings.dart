@@ -72,17 +72,6 @@ class Settings {
     unawaited(_prefs.setInt('last_fetch', value.millisecondsSinceEpoch));
   }
 
-  Future<bool> hasForcedFullTransactionRefetchForYnabSinceDateChange() async {
-    return await _prefs
-            .getBoolStream('forced_full_transaction_refetch_for_ynab_since_date_change')
-            .first ??
-        false;
-  }
-
-  Future<void> setHasForcedFullTransactionRefetchForYnabSinceDateChange() async {
-    await _prefs.setBool('forced_full_transaction_refetch_for_ynab_since_date_change', true);
-  }
-
   ValueStream<int> watchAppReviewEvents() {
     return _prefs.getIntStream('app_review_events').map((value) => value ?? 0).shareValue();
   }

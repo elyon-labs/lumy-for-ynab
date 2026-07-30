@@ -68,7 +68,7 @@ class LocalDatabase extends _$LocalDatabase {
   LocalDatabase(super.e);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration {
@@ -196,6 +196,13 @@ class LocalDatabase extends _$LocalDatabase {
             await customStatement('DROP INDEX IF EXISTS idx_sub_txn_join');
             await m.createIndex(schema.idxTxnBudgetDeletedDate);
             await m.createIndex(schema.idxSubTxnJoin);
+          });
+        },
+        from14To15: (m, schema) async {
+          await transaction(() async {
+            // Force each budget to replace its cached transactions with a
+            // complete snapshot after its next successful fetch.
+            await delete(schema.dbTransactionKnowledges).go();
           });
         },
       ),

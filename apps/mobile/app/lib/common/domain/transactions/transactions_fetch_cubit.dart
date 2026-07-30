@@ -61,11 +61,11 @@ class TransactionsFetchCubit extends Cubit<TransactionsFetchState> {
     final fetchStream = settings.watchSelectedBudgetId().switchMap(($budgetId) async* {
       if ($budgetId.isSome()) {
         final budgetId = $budgetId.unwrap();
-        await _ensureFullTransactionHistoryWillBeFetched();
         final lastKnowledge = await database.getTransactionKnowledge(budgetId: budgetId);
+        final isFullFetch = lastKnowledge == null;
         yield TransactionsFetchState(
           lastFetch: state.lastFetch,
-          isInitialFetch: lastKnowledge == null,
+          isInitialFetch: isFullFetch,
           transactions: const Loading(),
         );
         final response = await client.execute<Json>(
@@ -84,7 +84,13 @@ class TransactionsFetchCubit extends Cubit<TransactionsFetchState> {
           case SuccessResponse<Json>():
             final json = response.response.data!;
             final parsed = await compute(TransactionsResponseMapper.fromMap, json);
-            if (parsed.data.transactions.isEmpty) {
+            if (isFullFetch) {
+              await database.replaceTransactions(
+                parsed.data.transactions,
+                budgetId: budgetId,
+                knowledge: parsed.data.serverKnowledge,
+              );
+            } else if (parsed.data.transactions.isEmpty) {
               await database.updateTransactionKnowledge(
                 parsed.data.serverKnowledge,
                 budgetId: budgetId,
@@ -129,13 +135,5 @@ class TransactionsFetchCubit extends Cubit<TransactionsFetchState> {
       );
     });
     subs.add(sub);
-  }
-
-  Future<void> _ensureFullTransactionHistoryWillBeFetched() async {
-    final hasForcedRefetch = await settings.hasForcedFullTransactionRefetchForYnabSinceDateChange();
-    if (hasForcedRefetch) return;
-
-    await database.deleteTransactionKnowledges();
-    await settings.setHasForcedFullTransactionRefetchForYnabSinceDateChange();
   }
 }

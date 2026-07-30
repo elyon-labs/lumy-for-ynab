@@ -6898,6 +6898,572 @@ final class Schema14 extends i0.VersionedSchema {
   );
 }
 
+final class Schema15 extends i0.VersionedSchema {
+  Schema15({required super.database}) : super(version: 15);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    dbBudgets,
+    dbCurrencyFormats,
+    dbAccounts,
+    dbAccountInterestRates,
+    dbAccountMinimumPayments,
+    dbAccountEscrowAmounts,
+    dbPayees,
+    dbCategoryGroups,
+    dbCategories,
+    dbTransactions,
+    dbSubTransactions,
+    dbScheduledTransactions,
+    dbScheduledSubTransactions,
+    dbMonths,
+    dbAccountKnowledges,
+    dbCategoryKnowledges,
+    dbPayeeKnowledges,
+    dbTransactionKnowledges,
+    dbScheduledTransactionKnowledges,
+    dbMonthKnowledges,
+    dbCategoryViews,
+    dbCategoryViewCategories,
+    dbCategoryViewCategoryGroups,
+    dbLegacySpendTrackers,
+    dbQuerySpendTrackers,
+    dbSpendTrackerConditions,
+    dbSpendTrackerTests,
+    dbFrugalMonths,
+    dbFrugalMonthCategories,
+    dbFrugalMonthAccounts,
+    dbGoals,
+    dbDebtPayoffGoalsMetadata,
+    dbDebtPayoffGoalsAccounts,
+    idxTxn,
+    idxTxnBudgetDeletedDate,
+    idxSubTxn,
+    idxSubTxnJoin,
+    idxScheduledTxn,
+    idxScheduledSubTxn,
+  ];
+  late final Shape0 dbBudgets = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'db_budgets',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [_column_0, _column_1, _column_2, _column_3, _column_4],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 dbCurrencyFormats = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'db_currency_formats',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id)'],
+      columns: [
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+        _column_13,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape23 dbAccounts = Shape23(
+    source: i0.VersionedTable(
+      entityName: 'db_accounts',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [
+        _column_0,
+        _column_5,
+        _column_14,
+        _column_1,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_20,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape24 dbAccountInterestRates = Shape24(
+    source: i0.VersionedTable(
+      entityName: 'db_account_interest_rates',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id, account_id, month)'],
+      columns: [_column_5, _column_24, _column_46, _column_59],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape25 dbAccountMinimumPayments = Shape25(
+    source: i0.VersionedTable(
+      entityName: 'db_account_minimum_payments',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id, account_id, month)'],
+      columns: [_column_5, _column_24, _column_46, _column_60],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape26 dbAccountEscrowAmounts = Shape26(
+    source: i0.VersionedTable(
+      entityName: 'db_account_escrow_amounts',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id, account_id, month)'],
+      columns: [_column_5, _column_24, _column_46, _column_61],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 dbPayees = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'db_payees',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [_column_0, _column_5, _column_1, _column_18],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape34 dbCategoryGroups = Shape34(
+    source: i0.VersionedTable(
+      entityName: 'db_category_groups',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [
+        _column_0,
+        _column_5,
+        _column_1,
+        _column_19,
+        _column_20,
+        _column_86,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape35 dbCategories = Shape35(
+    source: i0.VersionedTable(
+      entityName: 'db_categories',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [
+        _column_0,
+        _column_21,
+        _column_5,
+        _column_1,
+        _column_19,
+        _column_20,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_67,
+        _column_68,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+        _column_73,
+        _column_74,
+        _column_75,
+        _column_76,
+        _column_77,
+        _column_78,
+        _column_79,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 dbTransactions = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'db_transactions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [
+        _column_0,
+        _column_5,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_20,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 dbSubTransactions = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'db_sub_transactions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [
+        _column_0,
+        _column_35,
+        _column_5,
+        _column_22,
+        _column_20,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape32 dbScheduledTransactions = Shape32(
+    source: i0.VersionedTable(
+      entityName: 'db_scheduled_transactions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [
+        _column_0,
+        _column_5,
+        _column_22,
+        _column_80,
+        _column_81,
+        _column_82,
+        _column_24,
+        _column_83,
+        _column_20,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_34,
+        _column_84,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape33 dbScheduledSubTransactions = Shape33(
+    source: i0.VersionedTable(
+      entityName: 'db_scheduled_sub_transactions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uuid)'],
+      columns: [
+        _column_0,
+        _column_85,
+        _column_5,
+        _column_22,
+        _column_20,
+        _column_26,
+        _column_27,
+        _column_29,
+        _column_30,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape19 dbMonths = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'db_months',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id, month)'],
+      columns: [
+        _column_5,
+        _column_46,
+        _column_52,
+        _column_53,
+        _column_54,
+        _column_55,
+        _column_56,
+        _column_57,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 dbAccountKnowledges = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'db_account_knowledges',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id)'],
+      columns: [_column_5, _column_36],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape20 dbCategoryKnowledges = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'db_category_knowledges',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id)'],
+      columns: [_column_5, _column_36, _column_58],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 dbPayeeKnowledges = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'db_payee_knowledges',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id)'],
+      columns: [_column_5, _column_36],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 dbTransactionKnowledges = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'db_transaction_knowledges',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id)'],
+      columns: [_column_5, _column_36],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 dbScheduledTransactionKnowledges = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'db_scheduled_transaction_knowledges',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id)'],
+      columns: [_column_5, _column_36],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape20 dbMonthKnowledges = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'db_month_knowledges',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(budget_id)'],
+      columns: [_column_5, _column_36, _column_58],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape21 dbCategoryViews = Shape21(
+    source: i0.VersionedTable(
+      entityName: 'db_category_views',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_1, _column_5, _column_20],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 dbCategoryViewCategories = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'db_category_view_categories',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_38, _column_39],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape22 dbCategoryViewCategoryGroups = Shape22(
+    source: i0.VersionedTable(
+      entityName: 'db_category_view_category_groups',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_38, _column_21],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 dbLegacySpendTrackers = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'db_legacy_spend_trackers',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_37,
+        _column_1,
+        _column_40,
+        _column_41,
+        _column_5,
+        _column_20,
+        _column_15,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 dbQuerySpendTrackers = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'db_query_spend_trackers',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_37,
+        _column_1,
+        _column_40,
+        _column_42,
+        _column_5,
+        _column_20,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape13 dbSpendTrackerConditions = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'db_spend_tracker_conditions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_15, _column_43],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 dbSpendTrackerTests = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'db_spend_tracker_tests',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_42, _column_44, _column_45],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape15 dbFrugalMonths = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'db_frugal_months',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_5, _column_46, _column_47, _column_20],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape16 dbFrugalMonthCategories = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'db_frugal_month_categories',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_48, _column_39],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape17 dbFrugalMonthAccounts = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'db_frugal_month_accounts',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_48, _column_24],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape27 dbGoals = Shape27(
+    source: i0.VersionedTable(
+      entityName: 'db_goals',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_5, _column_1, _column_62, _column_15],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape29 dbDebtPayoffGoalsMetadata = Shape29(
+    source: i0.VersionedTable(
+      entityName: 'db_debt_payoff_goals_metadata',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_37, _column_63, _column_64],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape30 dbDebtPayoffGoalsAccounts = Shape30(
+    source: i0.VersionedTable(
+      entityName: 'db_debt_payoff_goals_accounts',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(goal_id, account_id)'],
+      columns: [_column_63, _column_24, _column_66],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxTxn = i1.Index(
+    'idx_txn',
+    'CREATE INDEX idx_txn ON db_transactions (budget_id, is_deleted)',
+  );
+  final i1.Index idxTxnBudgetDeletedDate = i1.Index(
+    'idx_txn_budget_deleted_date',
+    'CREATE INDEX idx_txn_budget_deleted_date ON db_transactions (budget_id, is_deleted, date)',
+  );
+  final i1.Index idxSubTxn = i1.Index(
+    'idx_sub_txn',
+    'CREATE INDEX idx_sub_txn ON db_sub_transactions (budget_id, transaction_id, is_deleted)',
+  );
+  final i1.Index idxSubTxnJoin = i1.Index(
+    'idx_sub_txn_join',
+    'CREATE INDEX idx_sub_txn_join ON db_sub_transactions (transaction_id, is_deleted)',
+  );
+  final i1.Index idxScheduledTxn = i1.Index(
+    'idx_scheduled_txn',
+    'CREATE INDEX idx_scheduled_txn ON db_scheduled_transactions (budget_id, is_deleted)',
+  );
+  final i1.Index idxScheduledSubTxn = i1.Index(
+    'idx_scheduled_sub_txn',
+    'CREATE INDEX idx_scheduled_sub_txn ON db_scheduled_sub_transactions (budget_id, scheduled_transaction_id, is_deleted)',
+  );
+}
+
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
@@ -6912,6 +7478,7 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
   required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
+  required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -6980,6 +7547,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from13To14(migrator, schema);
         return 14;
+      case 14:
+        final schema = Schema15(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from14To15(migrator, schema);
+        return 15;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -7000,6 +7572,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
   required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
+  required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -7015,5 +7588,6 @@ i1.OnUpgrade stepByStep({
     from11To12: from11To12,
     from12To13: from12To13,
     from13To14: from13To14,
+    from14To15: from14To15,
   ),
 );
