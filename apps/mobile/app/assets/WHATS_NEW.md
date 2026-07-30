@@ -1,3 +1,8 @@
+## 1.26.2
+
+**Fixes:**
+- Fixes an issue where duplicate transactions could remain in Lumy's reports after syncing.
+
 ## 1.26.1
 
 **Fixes:**
