@@ -58,59 +58,84 @@ extension AppDatabaseTransactionsX on LocalDatabase {
     required String budgetId,
     required int knowledge,
   }) async {
-    await batch((b) async {
-      final transactionStatements = <Insertable>[];
-      final subTransactionStatements = <Insertable>[];
-      for (final transaction in transactions) {
-        transactionStatements.add(
-          DbTransactionsCompanion.insert(
-            uuid: transaction.id,
+    await transaction(() async {
+      await _insertTransactions(transactions, budgetId: budgetId, knowledge: knowledge);
+    });
+  }
+
+  Future<void> replaceTransactions(
+    List<PastTransaction> transactions, {
+    required String budgetId,
+    required int knowledge,
+  }) async {
+    await transaction(() async {
+      await (delete(dbSubTransactions)..where((table) => table.budgetId.equals(budgetId))).go();
+      await (delete(dbTransactions)..where((table) => table.budgetId.equals(budgetId))).go();
+      await _insertTransactions(transactions, budgetId: budgetId, knowledge: knowledge);
+    });
+  }
+
+  Future<void> _insertTransactions(
+    List<PastTransaction> transactions, {
+    required String budgetId,
+    required int knowledge,
+  }) async {
+    final transactionStatements = <Insertable>[];
+    final subTransactionStatements = <Insertable>[];
+    for (final transaction in transactions) {
+      transactionStatements.add(
+        DbTransactionsCompanion.insert(
+          uuid: transaction.id,
+          budgetId: budgetId,
+          amount: transaction.amount,
+          date: transaction.date,
+          accountId: transaction.accountId,
+          isDeleted: transaction.isDeleted,
+          payeeName: Value(transaction.payeeName),
+          payeeId: Value(transaction.payeeId),
+          categoryId: Value(transaction.categoryId),
+          categoryName: Value(transaction.categoryName),
+          memo: Value(transaction.memo),
+          transferAccountId: Value(transaction.transferAccountId),
+          transferTransactionId: Value(transaction.transferTransactionId),
+          matchedTransactionId: Value(transaction.matchedTransactionId),
+          importId: Value(transaction.importId),
+          flagColor: Value(
+            transaction.flagColor == null || transaction.flagColor!.isEmpty
+                ? null
+                : Flag.values.byName(transaction.flagColor!),
+          ),
+        ),
+      );
+      for (final subTransaction in transaction.subTransactions) {
+        subTransactionStatements.add(
+          DbSubTransactionsCompanion.insert(
+            uuid: subTransaction.id,
+            transactionId: transaction.id,
             budgetId: budgetId,
-            amount: transaction.amount,
-            date: transaction.date,
-            accountId: transaction.accountId,
-            isDeleted: transaction.isDeleted,
-            payeeName: Value(transaction.payeeName),
-            payeeId: Value(transaction.payeeId),
-            categoryId: Value(transaction.categoryId),
-            categoryName: Value(transaction.categoryName),
-            memo: Value(transaction.memo),
-            transferAccountId: Value(transaction.transferAccountId),
-            transferTransactionId: Value(transaction.transferTransactionId),
-            matchedTransactionId: Value(transaction.matchedTransactionId),
-            importId: Value(transaction.importId),
-            flagColor: Value(
-              transaction.flagColor == null || transaction.flagColor!.isEmpty
-                  ? null
-                  : Flag.values.byName(transaction.flagColor!),
-            ),
+            amount: subTransaction.amount,
+            isDeleted: subTransaction.isDeleted,
+            payeeName: Value(subTransaction.payeeName),
+            payeeId: Value(subTransaction.payeeId),
+            categoryId: Value(subTransaction.categoryId),
+            categoryName: Value(subTransaction.categoryName),
+            memo: Value(subTransaction.memo),
+            transferAccountId: Value(subTransaction.transferAccountId),
+            transferTransactionId: Value(subTransaction.transferTransactionId),
           ),
         );
-        for (final subTransaction in transaction.subTransactions) {
-          subTransactionStatements.add(
-            DbSubTransactionsCompanion.insert(
-              uuid: subTransaction.id,
-              transactionId: transaction.id,
-              budgetId: budgetId,
-              amount: subTransaction.amount,
-              isDeleted: subTransaction.isDeleted,
-              payeeName: Value(subTransaction.payeeName),
-              payeeId: Value(subTransaction.payeeId),
-              categoryId: Value(subTransaction.categoryId),
-              categoryName: Value(subTransaction.categoryName),
-              memo: Value(subTransaction.memo),
-              transferAccountId: Value(subTransaction.transferAccountId),
-              transferTransactionId: Value(subTransaction.transferTransactionId),
-            ),
-          );
-        }
       }
-      b
-        ..insertAllOnConflictUpdate(dbTransactions, transactionStatements)
-        ..insertAllOnConflictUpdate(dbSubTransactions, subTransactionStatements)
-        ..insertAllOnConflictUpdate(dbTransactionKnowledges, [
-          DbTransactionKnowledgesCompanion.insert(budgetId: budgetId, knowledge: knowledge),
-        ]);
+    }
+    await batch((batch) {
+      if (transactionStatements.isNotEmpty) {
+        batch.insertAllOnConflictUpdate(dbTransactions, transactionStatements);
+      }
+      if (subTransactionStatements.isNotEmpty) {
+        batch.insertAllOnConflictUpdate(dbSubTransactions, subTransactionStatements);
+      }
+      batch.insertAllOnConflictUpdate(dbTransactionKnowledges, [
+        DbTransactionKnowledgesCompanion.insert(budgetId: budgetId, knowledge: knowledge),
+      ]);
     });
   }
 
