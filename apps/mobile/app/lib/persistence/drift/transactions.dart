@@ -125,8 +125,7 @@ extension AppDatabaseTransactionsX on LocalDatabase {
           ])
           ..where(
             dbTransactions.budgetId.equals(budgetId) &
-                dbTransactions.isDeleted.equals(false) &
-                (dbTransactions.importId.isNull() | dbTransactions.importId.like('YNAB:P:%').not()),
+                dbTransactions.isDeleted.equals(false),
           )
           ..orderBy([OrderingTerm.desc(dbTransactions.date)]);
     return query.watch().map((rows) {
