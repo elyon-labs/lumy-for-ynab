@@ -123,10 +123,7 @@ extension AppDatabaseTransactionsX on LocalDatabase {
                   dbSubTransactions.isDeleted.equals(false),
             ),
           ])
-          ..where(
-            dbTransactions.budgetId.equals(budgetId) &
-                dbTransactions.isDeleted.equals(false),
-          )
+          ..where(dbTransactions.budgetId.equals(budgetId) & dbTransactions.isDeleted.equals(false))
           ..orderBy([OrderingTerm.desc(dbTransactions.date)]);
     return query.watch().map((rows) {
       final collected = rows.parseJoin(
