@@ -68,6 +68,10 @@ group('Database', () {
 
 ## Pending Transactions
 
+We tried omitting transactions whose import IDs begin with `YNAB:P:`, but found that YNAB
+sometimes retains one of these as the canonical, long-term transaction. Filtering them therefore
+caused real transaction data to disappear, so Lumy preserves them.
+
 From Danielle at YNAB:
 
 > Generally, it is not expected that pending transactions will show up at all in the API because they are not synced down. We have updated the endpoint description in our API documentation to make this more clear. For example, the GET transactions endpoint now states that it "Returns budget transactions, excluding any pending transactions."

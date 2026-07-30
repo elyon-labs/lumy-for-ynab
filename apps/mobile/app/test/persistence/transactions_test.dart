@@ -17,7 +17,7 @@ void main() {
     });
 
     group('watchTransactions', () {
-      test('does not emit pending imported transactions', () async {
+      test('emits pending imported transactions', () async {
         await database.insertTransactions(
           [
             TransactionFactory.build(
@@ -39,7 +39,10 @@ void main() {
 
         final transactions = await database.watchTransactions(budgetId: 'budget-1').first;
 
-        expect(transactions.map((transaction) => transaction.id), ['normal']);
+        expect(
+          transactions.map((transaction) => transaction.id),
+          unorderedEquals(['normal', 'pending']),
+        );
       });
 
       test('emits imported transactions that are not pending', () async {

@@ -1,3 +1,8 @@
+## 1.26.1
+
+**Fixes:**
+- Fixes an issue where some long-term transactions could be omitted from Lumy's reports.
+
 ## 1.26.0
 
 Lumy is now free and open source! You can read more [here](https://lumyforynab.app/open-source).
