@@ -44,7 +44,7 @@ Future<void> updateMetricsWidgetInBackground({required ElyonColors palette}) asy
             filter: const ExpenseFilter(),
           ),
         )
-        .nextValue(),
+        .first,
     lastMonthExpenseTransactions: await transactionsRepo
         .watch(
           TransactionsView(
@@ -57,6 +57,6 @@ Future<void> updateMetricsWidgetInBackground({required ElyonColors palette}) asy
             filter: const ExpenseFilter(),
           ),
         )
-        .nextValue(),
+        .first,
   );
 }

@@ -1,6 +1,5 @@
 import 'package:lumy/common/domain/transactions/transactions_repository.dart';
 import 'package:lumy/common/domain/transactions/transactions_view.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:ynab_api_models/ynab_api_models.dart';
 
 class FakeTransactionsRepository implements TransactionsRepository {
@@ -9,8 +8,8 @@ class FakeTransactionsRepository implements TransactionsRepository {
   final List<PastTransaction> Function(TransactionsView view)? transactions;
 
   @override
-  ValueStream<List<PastTransaction>> watch(TransactionsView view) {
-    return Stream.value(transactions?.call(view) ?? const []).shareValue();
+  Stream<List<PastTransaction>> watch(TransactionsView view) {
+    return Stream.value(transactions?.call(view) ?? const []);
   }
 
   @override

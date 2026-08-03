@@ -55,8 +55,8 @@ class TransactionsRepository {
 
   final _all = BehaviorSubject<List<PastTransaction>>();
   final _subs = CompositeSubscription();
-  final _baseStreams = <_TransactionsBaseView, ValueStream<List<PastTransaction>>>{};
-  final _viewStreams = <TransactionsView, ValueStream<List<PastTransaction>>>{};
+  final _baseStreams = <_TransactionsBaseView, Stream<List<PastTransaction>>>{};
+  final _viewStreams = <TransactionsView, Stream<List<PastTransaction>>>{};
 
   void _streamFromDatabase() {
     final sub = _budgetId()
@@ -72,13 +72,13 @@ class TransactionsRepository {
     _subs.add(sub);
   }
 
-  ValueStream<List<PastTransaction>> watch(TransactionsView view) {
-    return _viewStreams.putIfAbsent(view, () => _watchUncached(view));
+  Stream<List<PastTransaction>> watch(TransactionsView view) {
+    return _cacheWhileObserved(_viewStreams, view, () => _watchUncached(view));
   }
 
-  ValueStream<List<PastTransaction>> _watchUncached(TransactionsView view) {
+  Stream<List<PastTransaction>> _watchUncached(TransactionsView view) {
     final baseView = _TransactionsBaseView(dateRange: view.dateRange, accounts: view.accounts);
-    final baseStream = _baseStreams.putIfAbsent(baseView, () => _watchBase(baseView, view));
+    final baseStream = _cacheWhileObserved(_baseStreams, baseView, () => _watchBase(baseView));
 
     if (view.categories is AllCategories && view.filter is NoFilter) {
       return baseStream;
@@ -92,13 +92,10 @@ class TransactionsRepository {
     }).asyncMap((event) async {
       final (transactions, categories) = event;
       return _applyCategoryView(view, transactions, categories);
-    }).shareValue();
+    });
   }
 
-  ValueStream<List<PastTransaction>> _watchBase(
-    _TransactionsBaseView baseView,
-    TransactionsView sourceView,
-  ) {
+  Stream<List<PastTransaction>> _watchBase(_TransactionsBaseView baseView) {
     final dateRangeStream = switch (baseView.dateRange) {
       SelectedDateRange() => _selectedDateRange(),
       SpecificDateRange(:final dateRange) => Stream.value(dateRange),
@@ -119,7 +116,7 @@ class TransactionsRepository {
         allTransactions: transactions,
         allAccounts: accounts,
       );
-    }).shareValue();
+    });
   }
 
   Future<void> dispose() async {
@@ -128,6 +125,22 @@ class TransactionsRepository {
     await _subs.dispose();
     await _all.close();
   }
+}
+
+Stream<V> _cacheWhileObserved<K, V>(Map<K, Stream<V>> cache, K key, Stream<V> Function() create) {
+  final existing = cache[key];
+  if (existing != null) return existing;
+
+  var listenerCount = 0;
+  late final Stream<V> cached;
+  cached = create().doOnListen(() => listenerCount++).doOnCancel(() {
+    listenerCount--;
+    if (listenerCount == 0 && identical(cache[key], cached)) {
+      cache.remove(key);
+    }
+  }).shareValue();
+  cache[key] = cached;
+  return cached;
 }
 
 class _TransactionsBaseView extends Equatable {

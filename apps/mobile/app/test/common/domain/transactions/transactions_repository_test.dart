@@ -116,6 +116,104 @@ void main() {
         await observer3.cancel();
       });
 
+      test('it replays a shared base view to a later filtered subscriber', () async {
+        final transactions = BehaviorSubject<List<PastTransaction>>.seeded([
+          TransactionFactory.build(
+            id: 'expense',
+            amount: -1000,
+            date: '2026-01-15',
+            categoryId: 'category',
+            isDeleted: false,
+            subTransactions: const [],
+          ),
+        ]);
+        final subject = TransactionsRepository(
+          transactions: (_) => transactions,
+          categoriesRepo: FakeCategoriesRepository(
+            categories: [CategoryFactory.build(id: 'category', isDeleted: false, isHidden: false)],
+          ),
+          accountsRepo: FakeAccountsRepository(),
+          budgetId: () => Stream.value(const Some('abcd12345')),
+          selectedDateRange: dateRange,
+        );
+        const baseView = TransactionsView(
+          dateRange: SelectedDateRange(),
+          accounts: AllAccounts(),
+          categories: AllCategories(),
+          filter: NoFilter(),
+        );
+        const filteredView = TransactionsView(
+          dateRange: SelectedDateRange(),
+          accounts: AllAccounts(),
+          categories: CategoriesInSelectedView(),
+          filter: NoFilter(),
+        );
+
+        final baseSubscription = subject.watch(baseView).listen((_) {});
+        await pumpEventQueue();
+
+        final filtered = await subject
+            .watch(filteredView)
+            .first
+            .timeout(const Duration(seconds: 1));
+
+        expect(filtered.map((transaction) => transaction.id), ['expense']);
+
+        await baseSubscription.cancel();
+        await subject.dispose();
+        await transactions.close();
+      });
+
+      test('it recreates an evicted stream for a later subscriber', () async {
+        final transactions = BehaviorSubject<List<PastTransaction>>.seeded([
+          TransactionFactory.build(id: 'january', date: '2026-01-15'),
+          TransactionFactory.build(id: 'february', date: '2026-02-15'),
+        ]);
+        final selectedDateRange = BehaviorSubject<DateRange>.seeded((
+          from: LocalDate(2026, 1, 1),
+          to: LocalDate(2026, 1, 31),
+        ));
+        final subject = TransactionsRepository(
+          transactions: (_) => transactions,
+          categoriesRepo: FakeCategoriesRepository(),
+          accountsRepo: FakeAccountsRepository(),
+          budgetId: () => Stream.value(const Some('abcd12345')),
+          selectedDateRange: () => selectedDateRange,
+        );
+        const view = TransactionsView(
+          dateRange: SelectedDateRange(),
+          accounts: AllAccounts(),
+          categories: AllCategories(),
+          filter: NoFilter(),
+        );
+
+        final firstStream = subject.watch(view);
+        final firstEmitted = <List<PastTransaction>>[];
+        final firstSubscription = firstStream.listen(firstEmitted.add);
+        await pumpEventQueue();
+
+        expect(firstEmitted.single.map((transaction) => transaction.id), ['january']);
+
+        await firstSubscription.cancel();
+
+        final secondStream = subject.watch(view);
+        final secondEmitted = <List<PastTransaction>>[];
+        final secondSubscription = secondStream.listen(secondEmitted.add);
+        await pumpEventQueue();
+
+        expect(identical(firstStream, secondStream), false);
+
+        selectedDateRange.add((from: LocalDate(2026, 2, 1), to: LocalDate(2026, 2, 28)));
+        await pumpEventQueue();
+
+        expect(secondEmitted.last.map((transaction) => transaction.id), ['february']);
+
+        await secondSubscription.cancel();
+        await subject.dispose();
+        await transactions.close();
+        await selectedDateRange.close();
+      });
+
       test('it reuses streams for equivalent transaction views', () async {
         var accountsWatchCount = 0;
         final subject = TransactionsRepository(
