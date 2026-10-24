@@ -158,10 +158,20 @@ Future<void> main() async {
 
       await $notifications().init();
 
-      // Schedule local notifications
-      await inject<MonthInReviewNotificationsHandler>().scheduleNext12MonthInReviewNotifications();
-      if (await settings.watchFrugalMonthNotificationsEnabled().nextValue()) {
-        await inject<FrugalMonthNotificationsHandler>().rescheduleFrugalMonthNotifications();
+      // Schedule local notifications. iOS 27 rejects scheduling requests from an app that has
+      // not been granted notification permission, so only schedule once permission is granted.
+      // Scheduling is a side effect of launching, never a precondition for it, so a failure here
+      // must not stop us from reaching `runApp`.
+      try {
+        if (await $notifications().hasPermission()) {
+          await inject<MonthInReviewNotificationsHandler>()
+              .scheduleNext12MonthInReviewNotifications();
+          if (await settings.watchFrugalMonthNotificationsEnabled().nextValue()) {
+            await inject<FrugalMonthNotificationsHandler>().rescheduleFrugalMonthNotifications();
+          }
+        }
+      } catch (error, stack) {
+        await errorReporter!.recordError(error, stack);
       }
 
       // Get the initial route when the app has been opened via a tap on a push

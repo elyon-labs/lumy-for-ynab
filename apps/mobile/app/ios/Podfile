@@ -1,5 +1,6 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '15.0'
+MINIMUM_IOS_VERSION = '15.0'
+platform :ios, MINIMUM_IOS_VERSION
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -47,6 +48,14 @@ post_install do |installer|
     # Fixes issue with cocoapods 1.13 and XCode15
     # See https://github.com/CocoaPods/CocoaPods/issues/12012
     target.build_configurations.each do |config|
+      # Xcode 27 rejects any deployment target below iOS 15. `flutter_additional_ios_build_settings`
+      # only clears the setting on pods that depend on Flutter, so the rest keep whatever their
+      # podspec declared and fail the build.
+      deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      if deployment_target && deployment_target.to_f < MINIMUM_IOS_VERSION.to_f
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = MINIMUM_IOS_VERSION
+      end
+
       xcconfig_path = config.base_configuration_reference.real_path
       xcconfig = File.read(xcconfig_path)
       xcconfig_mod = xcconfig.gsub(/DT_TOOLCHAIN_DIR/, "TOOLCHAIN_DIR")
