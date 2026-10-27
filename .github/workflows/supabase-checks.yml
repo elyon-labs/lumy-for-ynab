@@ -8,49 +8,20 @@ on:
       - .github/workflows/supabase-checks.yml
   workflow_dispatch:
 
-jobs:
-  edge-functions:
-    runs-on: ubuntu-latest
-    env:
-      SUPABASE_URL: http://127.0.0.1:54321
-      SUPABASE_ANON_KEY: test-key
-      SB_PUBLISHABLE_KEY: test-key
-    steps:
-      - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: 2.2.12
-      - name: Verify function formatting
-        run: deno fmt --check apps/supabase/functions
-      - name: Lint functions
-        run: deno lint apps/supabase/functions
-      - name: Type-check edge functions
-        run: |
-          mapfile -d '' files < <(find apps/supabase/functions -path '*/node_modules/*' -prune -o -name '*.ts' -print0)
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No TypeScript function files found."
-            exit 0
-          fi
-          deno check "${files[@]}"
+permissions:
+  contents: read
 
-  database:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/supabase
-    env:
-      SUPABASE_TELEMETRY_DISABLED: "1"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
-        with:
-          version: 2.95.4
-      - name: Start local Supabase database
-        run: supabase db start
-      - name: Validate database migrations
-        run: supabase db reset
-      - name: Lint database schema
-        run: supabase db lint --local --level warning --fail-on warning
-      - name: Stop local Supabase
-        if: ${{ always() }}
-        run: supabase stop --no-backup
+jobs:
+  checks:
+    name: Supabase checks
+    uses: elyon-labs/workflows/.github/workflows/validate-supabase.yml@381588c0b1a8e3ae15d52230a20fdd88ef584f1c # v1.0.0
+    with:
+      working-directory: apps/supabase
+      functions-directory: apps/supabase/functions
+      supabase-cli-version: "2.95.4"
+      deno-version: "2.2.12"
+      validate-edge-functions: true
+      validate-database: true
+      run-function-tests: false
+    permissions:
+      contents: read
