@@ -20,7 +20,6 @@ jobs:
       functions-directory: apps/supabase/functions
       supabase-cli-version: "2.95.4"
       deno-version: "2.2.12"
-      deno-config-path: apps/supabase/functions/deno.json
       validate-edge-functions: true
       validate-database: true
       run-function-tests: false
