@@ -1,33 +1,28 @@
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Colors, FontSize, LineHeight, Spacing } from '@lumy/theme';
+import { Spacing } from '@lumy/theme';
+import { Card, Screen, SectionHeader, Text } from '@lumy/ui';
 
 /**
- * A placeholder so the skeleton runs, and the first consumer of the tokens.
- *
- * It reads the scheme straight from the device because the theme provider and
- * the stored theme preference arrive with the UI package. The navigation shell
- * replaces this screen.
+ * A placeholder so the skeleton runs, and the first consumer of the UI
+ * package. The navigation shell replaces it.
  */
 export default function Index() {
-  const colors = Colors[useColorScheme() === 'dark' ? 'dark' : 'light'];
-
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Lumy</Text>
-    </View>
+    <Screen title="Lumy">
+      <View style={styles.body}>
+        <SectionHeader title="Getting started" />
+        <Card>
+          <Text weight="semibold">Nothing here yet</Text>
+          <Text tone="muted">
+            The budget, reports, and settings tabs arrive with the navigation shell.
+          </Text>
+        </Card>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing.edge,
-  },
-  title: {
-    fontSize: FontSize.heading,
-    lineHeight: LineHeight.heading,
-  },
+  body: { flex: 1, paddingHorizontal: Spacing.edge },
 });
