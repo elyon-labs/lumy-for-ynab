@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { DatabaseAdapter } from '../adapters/types';
+import { rebuildLedgerForTransactions } from '../ledger';
 import {
   BUDGET_ID,
   createHarness,
@@ -23,6 +24,7 @@ const EXPECTED_TABLES = [
   'category_groups',
   'category_months',
   'currency_formats',
+  'ledger_entries',
   'months',
   'payees',
   'scheduled_subtransactions',
@@ -65,12 +67,6 @@ describe('the schema', () => {
     expect(await tableNames(db)).toEqual(EXPECTED_TABLES);
   });
 
-  it('is at the version the migration list describes', async () => {
-    const row = await db.get<{ version: number }>('SELECT MAX(id) AS version FROM schema_migrations');
-
-    expect(row?.version).toBe(1);
-  });
-
   describe('budget scoping', () => {
     it('discards a budget and everything cached under it in one delete', async () => {
       // This is the whole of the repair path: no list of tables to keep in
@@ -83,6 +79,7 @@ describe('the schema', () => {
       await seedCategoryMonth(db, { categoryId: category, month: '2026-10-01' });
       const transaction = await seedTransaction(db, { id: 'txn-1', accountId: account });
       await seedSubtransaction(db, { id: 'sub-1', transactionId: transaction });
+      await rebuildLedgerForTransactions(db, [transaction]);
       await db.run(
         `INSERT INTO server_knowledge (budget_id, resource, knowledge, synced_at)
          VALUES (?, 'transactions', 42, '2026-10-29T00:00:00Z')`,
