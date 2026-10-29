@@ -16,6 +16,9 @@ importers:
       '@expo/vector-icons':
         specifier: 15.0.3
         version: 15.0.3(expo-font@58.0.9(expo@58.0.17)(react-native@0.88.0(@react-native/metro-config@0.88.0)(@types/react@19.3.0)(react@19.3.1))(react@19.3.1))(react-native@0.88.0(@react-native/metro-config@0.88.0)(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
+      '@lumy/money':
+        specifier: workspace:*
+        version: link:../../packages/money
       '@lumy/theme':
         specifier: workspace:*
         version: link:../../packages/theme
@@ -117,6 +120,15 @@ importers:
         specifier: 4.1.8
         version: 4.1.8(@types/node@26.6.5)(terser@5.51.2)(yaml@2.9.1)
 
+  packages/money:
+    devDependencies:
+      typescript:
+        specifier: ~5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: 4.1.8
+        version: 4.1.8(@types/node@26.6.5)(terser@5.51.2)(yaml@2.9.1)
+
   packages/theme:
     devDependencies:
       typescript:
@@ -128,6 +140,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@lumy/money':
+        specifier: workspace:*
+        version: link:../money
       '@lumy/theme':
         specifier: workspace:*
         version: link:../theme
