@@ -14,12 +14,16 @@
     "theme": "pnpm --dir packages/theme",
     "theme:test": "pnpm --dir packages/theme test",
     "theme:typecheck": "pnpm --dir packages/theme typecheck",
+    "ui": "pnpm --dir packages/ui",
+    "ui:lint": "pnpm --dir packages/ui lint",
+    "ui:typecheck": "pnpm --dir packages/ui typecheck",
+    "eslint-plugin:test": "pnpm --dir packages/eslint-plugin test",
     "web:dev": "pnpm --dir marketing-site dev",
     "web:build": "pnpm --dir marketing-site build",
     "web:preview": "pnpm --dir marketing-site preview",
-    "lint": "pnpm mobile:lint",
-    "test": "pnpm theme:test && pnpm mobile:test",
-    "typecheck": "pnpm theme:typecheck && pnpm mobile:typecheck"
+    "lint": "pnpm ui:lint && pnpm mobile:lint",
+    "test": "pnpm eslint-plugin:test && pnpm theme:test && pnpm mobile:test",
+    "typecheck": "pnpm theme:typecheck && pnpm ui:typecheck && pnpm mobile:typecheck"
   },
   "pnpm": {
     "overrides": {
