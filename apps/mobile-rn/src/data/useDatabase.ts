@@ -6,6 +6,8 @@ export interface DatabaseState {
   adapter: DatabaseAdapter | null;
   sqliteVersion: string | null;
   schema: number | null;
+  /** How many of the schema's tables the device actually has. */
+  tables: number | null;
   error: Error | null;
 }
 
@@ -22,6 +24,7 @@ export function useDatabase(): DatabaseState {
     adapter: null,
     sqliteVersion: null,
     schema: null,
+    tables: null,
     error: null,
   });
 
@@ -35,13 +38,17 @@ export function useDatabase(): DatabaseState {
         opened = adapter;
         await migrate(adapter);
 
-        const [sqliteVersion, schema] = await Promise.all([
+        const [sqliteVersion, schema, tables] = await Promise.all([
           adapter.sqliteVersion(),
           schemaVersion(adapter),
+          adapter.get<{ n: number }>(
+            `SELECT COUNT(*) AS n FROM sqlite_master
+             WHERE type = 'table' AND name NOT LIKE 'sqlite_%'`,
+          ),
         ]);
 
         if (!cancelled) {
-          setState({ adapter, sqliteVersion, schema, error: null });
+          setState({ adapter, sqliteVersion, schema, tables: tables?.n ?? 0, error: null });
         }
       } catch (error) {
         if (!cancelled) {
@@ -49,6 +56,7 @@ export function useDatabase(): DatabaseState {
             adapter: null,
             sqliteVersion: null,
             schema: null,
+            tables: null,
             error: error instanceof Error ? error : new Error(String(error)),
           });
         }
