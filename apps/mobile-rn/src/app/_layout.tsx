@@ -1,5 +1,7 @@
 import { Stack } from 'expo-router';
 
 export default function RootLayout() {
-  return <Stack />;
+  // The navigation shell replaces this. Until then the header would only show
+  // a route filename.
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

@@ -5,6 +5,8 @@
 - Flutter via `mise` using `flutter@3.41.4`.
 - Dart SDK from the Flutter toolchain.
 - Node.js and pnpm for the React Native app, the marketing site, and Supabase tooling. `mise.toml` pins the versions.
+- Ruby, pinned in `mise.toml`, so that CocoaPods is on PATH for the React Native app's iOS builds.
+- Xcode for iOS builds and Android Studio for Android builds.
 - Supabase CLI for the local stack.
 - A YNAB OAuth application for local development.
 

@@ -3,3 +3,7 @@
 flutter = "3.41.4"
 node = "22.23.2"
 pnpm = "10.33.4"
+# CocoaPods runs under this Ruby during `expo prebuild`. Without a pinned
+# Ruby, `pod` lands in a Homebrew gem directory that is not on PATH and the
+# iOS build fails on an out-of-sync Podfile.lock.
+ruby = "3.4"
