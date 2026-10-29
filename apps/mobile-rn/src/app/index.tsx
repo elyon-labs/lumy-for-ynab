@@ -12,7 +12,7 @@ import { useDatabase } from '@/data/useDatabase';
  * checking on a device before the data layer exists.
  */
 export default function Index() {
-  const { sqliteVersion, schema, error } = useDatabase();
+  const { sqliteVersion, schema, tables, error } = useDatabase();
 
   return (
     <Screen title="Lumy">
@@ -48,6 +48,10 @@ export default function Index() {
           <ListRow
             title="Schema"
             accessory={<Text tone="muted">{schema === null ? 'opening' : String(schema)}</Text>}
+          />
+          <ListRow
+            title="Tables"
+            accessory={<Text tone="muted">{tables === null ? 'opening' : String(tables)}</Text>}
           />
           {error === null ? null : <ListRow title="Error" subtitle={error.message} destructive />}
         </Card>

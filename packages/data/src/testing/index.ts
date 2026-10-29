@@ -6,4 +6,5 @@
  * cannot resolve and the device has no use for.
  */
 export * from '../adapters/nodeSqlite';
+export * from './fixtures';
 export * from './harness';
