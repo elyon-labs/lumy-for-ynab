@@ -21,12 +21,15 @@
     "money": "pnpm --dir packages/money",
     "money:test": "pnpm --dir packages/money test",
     "money:typecheck": "pnpm --dir packages/money typecheck",
+    "data": "pnpm --dir packages/data",
+    "data:test": "pnpm --dir packages/data test",
+    "data:typecheck": "pnpm --dir packages/data typecheck",
     "web:dev": "pnpm --dir marketing-site dev",
     "web:build": "pnpm --dir marketing-site build",
     "web:preview": "pnpm --dir marketing-site preview",
     "lint": "pnpm ui:lint && pnpm mobile:lint",
-    "test": "pnpm eslint-plugin:test && pnpm theme:test && pnpm money:test && pnpm mobile:test",
-    "typecheck": "pnpm theme:typecheck && pnpm money:typecheck && pnpm ui:typecheck && pnpm mobile:typecheck"
+    "test": "pnpm eslint-plugin:test && pnpm theme:test && pnpm money:test && pnpm data:test && pnpm mobile:test",
+    "typecheck": "pnpm theme:typecheck && pnpm money:typecheck && pnpm data:typecheck && pnpm ui:typecheck && pnpm mobile:typecheck"
   },
   "pnpm": {
     "overrides": {
