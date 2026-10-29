@@ -3,6 +3,13 @@ name: Pull Request Checks
 on:
   pull_request:
     branches: [main]
+    paths:
+      - apps/mobile/**
+      - apps/server/**
+      - melos.yaml
+      - pubspec.yaml
+      - pubspec.lock
+      - .github/workflows/pull_request_checks.yml
   workflow_dispatch:
 
 concurrency:
@@ -21,19 +28,3 @@ jobs:
       melos-version: "6.2.0"
     permissions:
       contents: read
-
-  marketing:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: marketing-site
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 22
-      - run: corepack enable
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build

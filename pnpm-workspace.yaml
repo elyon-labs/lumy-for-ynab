@@ -1,0 +1,26 @@
+packages:
+  - apps/mobile-rn
+  - marketing-site
+  - packages/*
+
+autoInstallPeers: false
+strictPeerDependencies: true
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+
+# Astro optimises images through Sharp, which ships a native binary its install
+# script puts in place. A build without it fails rather than degrading.
+onlyBuiltDependencies:
+  - sharp
+
+trustPolicyExclude:
+  # Pulled in by eslint-config-expo and never bundled into the app — it runs at
+  # lint time only. 3.10.1 was published without provenance where 3.10.0 had
+  # it, so it reads as a downgrade. Pinned exactly so a later publish cannot
+  # ride in on the exception.
+  - eslint-import-resolver-typescript@3.10.1
+  # Astro 4 pins a Vite 5 line that is no longer the newest Vite, so its
+  # releases read as a trust downgrade against a later, differently attested
+  # version. Pinned exactly so a future publish cannot ride in on the
+  # exception; drop it when the marketing site moves off Astro 4.
+  - vite@5.4.21
