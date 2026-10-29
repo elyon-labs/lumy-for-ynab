@@ -4,12 +4,16 @@ import { DEFAULT_CURRENCY_FORMAT, milliunits } from '@lumy/money';
 import { Spacing } from '@lumy/theme';
 import { Card, ListRow, Money, Screen, SectionHeader, Text } from '@lumy/ui';
 
+import { useDatabase } from '@/data/useDatabase';
+
 /**
  * A placeholder so the skeleton runs, standing in until the navigation shell
  * replaces it. It renders an amount because that is the one thing worth
  * checking on a device before the data layer exists.
  */
 export default function Index() {
+  const { sqliteVersion, schema, error } = useDatabase();
+
   return (
     <Screen title="Lumy">
       <View style={styles.body}>
@@ -34,6 +38,18 @@ export default function Index() {
               <Money amount={milliunits(-98_700)} format={DEFAULT_CURRENCY_FORMAT} colorBySign />
             }
           />
+        </Card>
+        <SectionHeader title="Database" />
+        <Card flush>
+          <ListRow
+            title="SQLite"
+            accessory={<Text tone="muted">{sqliteVersion ?? 'opening'}</Text>}
+          />
+          <ListRow
+            title="Schema"
+            accessory={<Text tone="muted">{schema === null ? 'opening' : String(schema)}</Text>}
+          />
+          {error === null ? null : <ListRow title="Error" subtitle={error.message} destructive />}
         </Card>
       </View>
     </Screen>
