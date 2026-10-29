@@ -4,7 +4,7 @@
 
 - Flutter via `mise` using `flutter@3.41.4`.
 - Dart SDK from the Flutter toolchain.
-- Node.js for the marketing site and Supabase tooling.
+- Node.js and pnpm for the React Native app, the marketing site, and Supabase tooling. `mise.toml` pins the versions.
 - Supabase CLI for the local stack.
 - A YNAB OAuth application for local development.
 
@@ -65,18 +65,38 @@ dart run bin/server.dart
 
 Configure the server with local environment variables for your YNAB OAuth client ID, client secret, redirect URI, and any host/port settings used by the server.
 
+## React Native App
+
+The Expo app and the marketing site share one pnpm workspace rooted at the
+repository root, so dependencies are installed there once.
+
+```sh
+pnpm install
+pnpm mobile:start
+```
+
+Run on a device or simulator with `pnpm mobile:ios` or `pnpm mobile:android`.
+Both prebuild the native projects, which are generated rather than committed.
+
+Checks:
+
+```sh
+pnpm typecheck
+pnpm lint
+pnpm test
+```
+
 ## Marketing Site
 
 ```sh
-cd marketing-site
-npm install
-npm run dev
+pnpm install
+pnpm web:dev
 ```
 
 Build with:
 
 ```sh
-npm run build
+pnpm web:build
 ```
 
 ## Public Configuration
