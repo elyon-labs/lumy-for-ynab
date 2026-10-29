@@ -11,12 +11,15 @@
     "mobile:lint": "pnpm --dir apps/mobile-rn lint",
     "mobile:test": "pnpm --dir apps/mobile-rn test",
     "mobile:typecheck": "pnpm --dir apps/mobile-rn typecheck",
+    "theme": "pnpm --dir packages/theme",
+    "theme:test": "pnpm --dir packages/theme test",
+    "theme:typecheck": "pnpm --dir packages/theme typecheck",
     "web:dev": "pnpm --dir marketing-site dev",
     "web:build": "pnpm --dir marketing-site build",
     "web:preview": "pnpm --dir marketing-site preview",
     "lint": "pnpm mobile:lint",
-    "test": "pnpm mobile:test",
-    "typecheck": "pnpm mobile:typecheck"
+    "test": "pnpm theme:test && pnpm mobile:test",
+    "typecheck": "pnpm theme:typecheck && pnpm mobile:typecheck"
   },
   "pnpm": {
     "overrides": {
