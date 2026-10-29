@@ -85,6 +85,50 @@ const INDEXED_QUERIES: Record<string, string> = {
   account_debt_months_by_budget: `
     SELECT account_id, month, interest_rate FROM account_debt_months
     WHERE budget_id = ?`,
+
+  // The transaction list's page, read straight off the index: the keyset
+  // cursor is the same (date, entry_id) the key is ordered by.
+  ledger_by_date: `
+    SELECT entry_id, date, amount FROM ledger_entries
+    WHERE budget_id = ? AND (date, entry_id) < (?, ?)
+    ORDER BY date DESC, entry_id DESC
+    LIMIT 50`,
+
+  // Spend and income by category, one row per (month, category).
+  ledger_by_category_month: `
+    SELECT month, category_id, SUM(amount) AS total FROM ledger_entries
+    WHERE budget_id = ? AND month BETWEEN ? AND ?
+    GROUP BY month, category_id`,
+
+  // Income by payee, one row per (month, payee).
+  ledger_by_payee_month: `
+    SELECT month, payee_id, SUM(amount) AS total FROM ledger_entries
+    WHERE budget_id = ? AND month BETWEEN ? AND ?
+    GROUP BY month, payee_id`,
+
+  // Account balances over time, which net worth and days buffer walk.
+  ledger_by_account_date: `
+    SELECT account_id, date, SUM(amount) AS total FROM ledger_entries
+    WHERE budget_id = ? AND account_id = ? AND date <= ?
+    GROUP BY account_id, date`,
+
+  // Category group rollups.
+  ledger_by_group_month: `
+    SELECT category_group_id, month, SUM(amount) AS total FROM ledger_entries
+    WHERE budget_id = ? AND category_group_id = ?
+    GROUP BY category_group_id, month`,
+
+  // The rebuild's delete, which runs once per page.
+  ledger_by_transaction: `
+    SELECT entry_id FROM ledger_entries
+    WHERE transaction_id = ?`,
+
+  // Spend by month, the hot path. The partial index carries only the rows
+  // that pass the predicate every one of these queries also carries.
+  ledger_spend_by_month: `
+    SELECT month, SUM(amount) AS total FROM ledger_entries
+    WHERE budget_id = ? AND is_expense = 1
+    GROUP BY month`,
 };
 
 /** A parameter for every `?` in the statement. The values do not matter. */

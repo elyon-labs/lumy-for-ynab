@@ -190,8 +190,11 @@ export interface SubtransactionFixture {
   budgetId?: string;
   amount?: number;
   payeeId?: string | null;
+  payeeName?: string | null;
   categoryId?: string | null;
   memo?: string | null;
+  transferAccountId?: string | null;
+  transferTransactionId?: string | null;
   deleted?: boolean;
 }
 
@@ -205,12 +208,12 @@ export async function seedSubtransaction(
     budget_id: subtransaction.budgetId ?? BUDGET_ID,
     amount: subtransaction.amount ?? -5_000,
     payee_id: subtransaction.payeeId ?? null,
-    payee_name: null,
+    payee_name: subtransaction.payeeName ?? null,
     category_id: subtransaction.categoryId ?? null,
     category_name: null,
     memo: subtransaction.memo ?? null,
-    transfer_account_id: null,
-    transfer_transaction_id: null,
+    transfer_account_id: subtransaction.transferAccountId ?? null,
+    transfer_transaction_id: subtransaction.transferTransactionId ?? null,
     deleted: Number(subtransaction.deleted ?? false),
   });
 
