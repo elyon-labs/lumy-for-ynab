@@ -12,6 +12,7 @@ import type {
 
 import type { DatabaseAdapter, Queryable } from '../adapters/types';
 import { advanceKnowledge, readKnowledge } from './knowledge';
+import { discardBudgetData } from './repair';
 import {
   MONTH_DETAIL_RESOURCE,
   SYNC_ORDER,
@@ -28,6 +29,7 @@ import {
   writeScheduledTransactions,
   writeTransactions,
 } from './writers';
+import { verifyAgainstSnapshot, type VerificationReport } from './verify';
 
 /**
  * The sync engine: the only thing in the app that writes YNAB data.
@@ -116,6 +118,22 @@ export interface SyncEngine {
    * figures.
    */
   syncMonthDetail(budgetId: string, month: string): Promise<void>;
+  /**
+   * Fetches a full snapshot and reports where the client disagrees with it.
+   *
+   * Read-only, and the question the debug screen asks. What to do about a
+   * divergence is `repairBudget`, which is a separate decision because it
+   * discards everything and re-downloads a budget.
+   */
+  verifyAgainstSnapshot(budgetId: string): Promise<VerificationReport>;
+  /**
+   * Discards a budget's cached YNAB data and syncs it again from scratch.
+   *
+   * The discard commits on its own, so a repair interrupted after it leaves
+   * the budget absent rather than half replaced — and the next sync of it
+   * takes the snapshot path, because its knowledge went with its rows.
+   */
+  repairBudget(budgetId: string): Promise<SyncReport>;
 }
 
 export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
@@ -232,7 +250,7 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
     }
   }
 
-  return {
+  const engine: SyncEngine = {
     syncBudgetList,
 
     async syncBudget(budgetId, budgetOptions = {}) {
@@ -326,6 +344,16 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
       return { budgetId, startedAt, resources };
     },
 
+    verifyAgainstSnapshot(budgetId) {
+      return verifyAgainstSnapshot({ db, client, budgetId, now });
+    },
+
+    async repairBudget(budgetId) {
+      await db.transaction((tx) => discardBudgetData(tx, budgetId));
+
+      return engine.syncBudget(budgetId, { full: true });
+    },
+
     async syncMonthDetail(budgetId, month) {
       const detail = await client.getMonth(budgetId, month);
       const syncedAt = now().toISOString();
@@ -342,4 +370,6 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
       });
     },
   };
+
+  return engine;
 }
