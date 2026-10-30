@@ -1,0 +1,84 @@
+{
+  "data": {
+    "category_groups": [
+      {
+        "id": "g-internal",
+        "name": "Internal Master Category",
+        "hidden": false,
+        "deleted": false,
+        "categories": [
+          {
+            "id": "c-ready",
+            "category_group_id": "g-internal",
+            "category_group_name": "Internal Master Category",
+            "name": "Inflow: Ready to Assign",
+            "hidden": false,
+            "original_category_group_id": null,
+            "note": null,
+            "budgeted": 0,
+            "activity": 1500000,
+            "balance": 0,
+            "goal_type": null,
+            "goal_needs_whole_amount": null,
+            "goal_day": null,
+            "goal_cadence": null,
+            "goal_cadence_frequency": null,
+            "goal_creation_month": null,
+            "goal_target": null,
+            "goal_target_month": null,
+            "goal_percentage_complete": null,
+            "goal_months_to_budget": null,
+            "goal_under_funded": null,
+            "goal_overall_funded": null,
+            "goal_overall_left": null,
+            "deleted": false
+          }
+        ]
+      },
+      {
+        "id": "g-everyday",
+        "name": "Everyday Expenses",
+        "hidden": false,
+        "deleted": false,
+        "categories": [
+          {
+            "id": "c-groceries",
+            "category_group_id": "g-everyday",
+            "name": "Groceries",
+            "hidden": false,
+            "note": "Includes the market",
+            "budgeted": 500000,
+            "activity": -82310,
+            "balance": 417690,
+            "goal_type": "NEED",
+            "goal_needs_whole_amount": false,
+            "goal_day": null,
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_creation_month": "2026-01-01",
+            "goal_target": 500000,
+            "goal_target_month": null,
+            "goal_percentage_complete": 100,
+            "goal_months_to_budget": 1,
+            "goal_under_funded": 0,
+            "goal_overall_funded": 500000,
+            "goal_overall_left": 0,
+            "deleted": false
+          },
+          {
+            "id": "c-fun",
+            "category_group_id": "g-everyday",
+            "name": "Fun Money",
+            "hidden": false,
+            "budgeted": 100000,
+            "activity": -18000,
+            "balance": 82000,
+            "goal_type": null,
+            "deleted": false
+          }
+        ]
+      }
+    ],
+    "server_knowledge": 1101
+  }
+}

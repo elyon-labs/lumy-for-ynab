@@ -1,0 +1,94 @@
+{
+  "data": {
+    "transactions": [
+      {
+        "id": "t-simple",
+        "date": "2026-10-14",
+        "amount": -42310,
+        "memo": "Weekly shop",
+        "cleared": "cleared",
+        "approved": true,
+        "flag_color": "red",
+        "account_id": "a-checking",
+        "payee_id": "p-grocer",
+        "payee_name": "Grocer",
+        "category_id": "c-groceries",
+        "category_name": "Groceries",
+        "transfer_account_id": null,
+        "transfer_transaction_id": null,
+        "matched_transaction_id": null,
+        "import_id": "YNAB:-42310:2026-10-14:1",
+        "deleted": false,
+        "subtransactions": []
+      },
+      {
+        "id": "t-split",
+        "date": "2026-10-12",
+        "amount": -58000,
+        "memo": "Big trip",
+        "cleared": "cleared",
+        "approved": true,
+        "flag_color": null,
+        "account_id": "a-checking",
+        "payee_id": "p-grocer",
+        "payee_name": "Grocer",
+        "category_id": null,
+        "category_name": "Split (Multiple Categories)...",
+        "transfer_account_id": null,
+        "transfer_transaction_id": null,
+        "matched_transaction_id": null,
+        "import_id": null,
+        "deleted": false,
+        "subtransactions": [
+          {
+            "id": "s-food",
+            "transaction_id": "t-split",
+            "amount": -40000,
+            "memo": null,
+            "payee_id": null,
+            "payee_name": null,
+            "category_id": "c-groceries",
+            "category_name": "Groceries",
+            "transfer_account_id": null,
+            "transfer_transaction_id": null,
+            "deleted": false
+          },
+          {
+            "id": "s-fun",
+            "transaction_id": "t-split",
+            "amount": -18000,
+            "memo": "Magazine",
+            "payee_id": "p-newsagent",
+            "payee_name": "Newsagent",
+            "category_id": "c-fun",
+            "category_name": "Fun Money",
+            "transfer_account_id": null,
+            "transfer_transaction_id": null,
+            "deleted": false
+          }
+        ]
+      },
+      {
+        "id": "t-opening",
+        "date": "2024-01-01",
+        "amount": 1500000,
+        "memo": null,
+        "cleared": "reconciled",
+        "approved": true,
+        "flag_color": "",
+        "account_id": "a-checking",
+        "payee_id": "p-opening",
+        "payee_name": "Starting Balance",
+        "category_id": "c-ready",
+        "category_name": "Inflow: Ready to Assign",
+        "transfer_account_id": null,
+        "transfer_transaction_id": null,
+        "matched_transaction_id": null,
+        "import_id": null,
+        "deleted": false,
+        "subtransactions": []
+      }
+    ],
+    "server_knowledge": 1200
+  }
+}

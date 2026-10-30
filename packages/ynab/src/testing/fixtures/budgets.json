@@ -1,0 +1,33 @@
+{
+  "data": {
+    "budgets": [
+      {
+        "id": "b-main",
+        "name": "My Budget",
+        "last_modified_on": "2026-10-29T18:02:11+00:00",
+        "first_month": "2024-01-01",
+        "last_month": "2026-12-01",
+        "date_format": { "format": "DD/MM/YYYY" },
+        "currency_format": {
+          "iso_code": "GBP",
+          "example_format": "123,456.78",
+          "decimal_digits": 2,
+          "decimal_separator": ".",
+          "symbol_first": true,
+          "group_separator": ",",
+          "currency_symbol": "£",
+          "display_symbol": true
+        }
+      },
+      {
+        "id": "b-no-format",
+        "name": "Budget Without A Format",
+        "last_modified_on": null,
+        "first_month": null,
+        "last_month": null,
+        "currency_format": null
+      }
+    ],
+    "default_budget": null
+  }
+}

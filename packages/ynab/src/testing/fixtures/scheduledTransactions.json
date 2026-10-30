@@ -1,0 +1,66 @@
+{
+  "data": {
+    "scheduled_transactions": [
+      {
+        "id": "st-rent",
+        "date_first": "2024-02-01",
+        "date_next": "2026-11-01",
+        "frequency": "monthly",
+        "amount": -1200000,
+        "memo": null,
+        "flag_color": null,
+        "flag_name": null,
+        "account_id": "a-checking",
+        "account_name": "Checking",
+        "payee_id": "p-landlord",
+        "payee_name": "Landlord",
+        "category_id": "c-rent",
+        "category_name": "Rent",
+        "transfer_account_id": null,
+        "deleted": false,
+        "subtransactions": []
+      },
+      {
+        "id": "st-utilities",
+        "date_first": "2024-02-05",
+        "date_next": "2026-11-05",
+        "frequency": "monthly",
+        "amount": -180000,
+        "memo": "Combined bill",
+        "flag_color": "blue",
+        "flag_name": "Bills",
+        "account_id": "a-checking",
+        "account_name": "Checking",
+        "payee_id": "p-utility",
+        "payee_name": "Utility Co",
+        "category_id": null,
+        "category_name": "Split (Multiple Categories)...",
+        "transfer_account_id": null,
+        "deleted": false,
+        "subtransactions": [
+          {
+            "id": "sst-power",
+            "scheduled_transaction_id": "st-utilities",
+            "amount": -120000,
+            "memo": null,
+            "payee_id": null,
+            "category_id": "c-power",
+            "transfer_account_id": null,
+            "deleted": false
+          },
+          {
+            "id": "sst-water",
+            "scheduled_transaction_id": "st-utilities",
+            "amount": -60000,
+            "memo": null,
+            "payee_id": null,
+            "category_id": "c-water",
+            "transfer_account_id": null,
+            "deleted": false
+          }
+        ]
+      }
+    ],
+    "server_knowledge": 640
+  }
+}
