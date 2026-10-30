@@ -90,17 +90,33 @@ export const ledgerEntries = sqliteTable(
     index('ledger_by_category_month').on(table.budgetId, table.month, table.categoryId),
     // Payee rollups per month.
     index('ledger_by_payee_month').on(table.budgetId, table.month, table.payeeId),
-    // Account balances and net worth over time.
-    index('ledger_by_account_date').on(table.budgetId, table.accountId, table.date),
-    // Category group rollups.
-    index('ledger_by_group_month').on(table.budgetId, table.categoryGroupId, table.month),
+    // The balance rollback behind net worth and the days buffer, which groups
+    // by (account, month). `amount` is in the key so the sum is covered and
+    // the group needs no sort — on a date-ordered key it was a temp b-tree
+    // over every entry in the budget.
+    index('ledger_by_account_month').on(
+      table.budgetId,
+      table.accountId,
+      table.month,
+      table.amount,
+    ),
+    // Category group rollups, with `amount` in the key so the sum comes off
+    // the index instead of fetching every matching row to add it up.
+    index('ledger_by_group_month').on(
+      table.budgetId,
+      table.categoryGroupId,
+      table.month,
+      table.amount,
+    ),
     // The rebuild's delete, and the index the cascade from `transactions`
     // needs to avoid scanning the largest table in the database.
     index('ledger_by_transaction').on(table.transactionId),
-    // Spend totals by month, which is the hot path. Partial, because the
-    // query always carries the same predicate and most rows fail it.
+    // Spend by month and by category, which is the hot path. Partial, because
+    // every one of those queries carries the same predicate, and wide enough
+    // to answer them from the index alone — without `amount` in the key, a
+    // spend rollup fetches every matching row from the table to sum it.
     index('ledger_spend_by_month')
-      .on(table.budgetId, table.month)
+      .on(table.budgetId, table.month, table.categoryId, table.amount)
       .where(sql`is_expense = 1`),
   ],
 );
