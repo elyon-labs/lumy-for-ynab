@@ -94,6 +94,16 @@ const INDEXED_QUERIES: Record<string, string> = {
     ORDER BY date DESC, entry_id DESC
     LIMIT 50`,
 
+  // The transaction list's page. A transaction is a group of entries, so its
+  // keyset is `(date, transaction_id)` and the group has to come off the index
+  // already ordered — `ledger_by_date` ends in `entry_id` and would sort.
+  ledger_by_date_transaction: `
+    SELECT date, transaction_id FROM ledger_entries
+    WHERE budget_id = ? AND (date, transaction_id) < (?, ?)
+    GROUP BY date, transaction_id
+    ORDER BY date DESC, transaction_id DESC
+    LIMIT 50`,
+
   // Spend and income by category, one row per (month, category).
   ledger_by_category_month: `
     SELECT month, category_id, SUM(amount) AS total FROM ledger_entries

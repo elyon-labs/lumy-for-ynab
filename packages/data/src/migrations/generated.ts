@@ -243,4 +243,11 @@ export const GENERATED_MIGRATIONS: readonly Migration[] = [
       `CREATE INDEX \`ledger_spend_by_month\` ON \`ledger_entries\` (\`budget_id\`,\`month\`) WHERE is_expense = 1;`,
     ],
   },
+  {
+    id: 3,
+    name: 'ledger_by_date_transaction',
+    statements: [
+      `CREATE INDEX \`ledger_by_date_transaction\` ON \`ledger_entries\` (\`budget_id\`,\`date\`,\`transaction_id\`);`,
+    ],
+  },
 ];

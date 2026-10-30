@@ -1,0 +1,1 @@
+CREATE INDEX `ledger_by_date_transaction` ON `ledger_entries` (`budget_id`,`date`,`transaction_id`);
