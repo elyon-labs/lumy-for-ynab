@@ -20,6 +20,26 @@ describe('writtenTable', () => {
   });
 
   it.each([
+    [
+      'a statement that leads with a CTE, as the ledger derivation does',
+      'WITH given(id) AS (VALUES (?)), scope(id) AS (SELECT id FROM given) DELETE FROM ledger_entries WHERE transaction_id IN (SELECT id FROM scope)',
+      'ledger_entries',
+    ],
+    [
+      'an insert fed by a CTE',
+      'WITH leaves AS (SELECT id FROM transactions) INSERT INTO ledger_entries (entry_id) SELECT id FROM leaves',
+      'ledger_entries',
+    ],
+    [
+      'an upsert, whose DO UPDATE is not a second target',
+      'INSERT INTO payees (id, name) VALUES (?, ?) ON CONFLICT (id) DO UPDATE SET name = excluded.name',
+      'payees',
+    ],
+  ])('reports %s', (_description, sql, table) => {
+    expect(writtenTable(sql)).toBe(table);
+  });
+
+  it.each([
     'SELECT * FROM transactions',
     'PRAGMA foreign_keys = ON',
     'CREATE INDEX idx_txn ON transactions (date)',

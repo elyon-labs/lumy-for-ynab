@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@lumy/money": "workspace:*"
+    "@lumy/money": "workspace:*",
+    "@lumy/ynab": "workspace:*"
   },
   "peerDependencies": {
     "expo-sqlite": "*"
