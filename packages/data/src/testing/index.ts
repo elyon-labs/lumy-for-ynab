@@ -8,3 +8,5 @@
 export * from '../adapters/nodeSqlite';
 export * from './fixtures';
 export * from './harness';
+export * from './payloads';
+export * from './stubClient';

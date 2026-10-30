@@ -6,7 +6,11 @@ import { isoMonth, optionalText, response } from './common';
  * How a budget's amounts are written.
  *
  * The field names are flattened to the shape `@lumy/money` takes, so nothing
- * downstream has to know YNAB calls it `symbol_first`.
+ * downstream has to know YNAB calls it `symbol_first`. `exampleFormat` is
+ * along for the ride: the formatter derives everything from the fields above
+ * it, but the raw tables hold what YNAB said so a snapshot can be diffed
+ * against them. YNAB has been seen to omit it, and an empty string is the
+ * faithful record of that.
  */
 export const currencyFormatSchema = z
   .object({
@@ -27,6 +31,7 @@ export const currencyFormatSchema = z
     currencySymbol: raw.currency_symbol,
     symbolFirst: raw.symbol_first,
     displaySymbol: raw.display_symbol,
+    exampleFormat: raw.example_format ?? '',
   }));
 
 export const budgetSchema = z

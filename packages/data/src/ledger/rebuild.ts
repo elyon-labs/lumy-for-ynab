@@ -210,3 +210,51 @@ export async function rebuildLedgerForBudget(tx: Queryable, budgetId: string): P
   await tx.run('DELETE FROM ledger_entries WHERE budget_id = ?', [budgetId]);
   await tx.run(`${scope}, ${LEAVES} ${INSERT}`, [budgetId]);
 }
+
+/**
+ * Re-derives the entries that resolved against a payee or category that has
+ * since been renamed, or moved to another group.
+ *
+ * An entry caches its resolved payee name, its category's group, and the
+ * classification read from those names, so a rename in the `payees` or
+ * `categories` payload leaves entries holding what was true when they were
+ * derived. Renaming a category to or from `Inflow: Ready to Assign`, or a
+ * payee to or from `Starting Balance`, changes the classification itself —
+ * so this is an accuracy question and not only a display one.
+ *
+ * Scoped to the entries that actually reference the changed ids. Nothing
+ * indexes `ledger_entries` by payee or category alone, so this scans the
+ * budget's entries; it runs only when a name or a group has genuinely
+ * changed, which a steady-state sync almost never reports.
+ */
+export async function rebuildLedgerForReferences(
+  tx: Queryable,
+  budgetId: string,
+  references: { payeeIds?: readonly string[]; categoryIds?: readonly string[] },
+): Promise<void> {
+  const payeeIds = references.payeeIds ?? [];
+  const categoryIds = references.categoryIds ?? [];
+  if (payeeIds.length === 0 && categoryIds.length === 0) return;
+
+  const tests: string[] = [];
+  const params: SqlValue[] = [budgetId];
+  if (payeeIds.length > 0) {
+    tests.push(`payee_id IN (${payeeIds.map(() => '?').join(', ')})`);
+    params.push(...payeeIds);
+  }
+  if (categoryIds.length > 0) {
+    tests.push(`category_id IN (${categoryIds.map(() => '?').join(', ')})`);
+    params.push(...categoryIds);
+  }
+
+  const rows = await tx.all<{ transaction_id: string }>(
+    `SELECT DISTINCT transaction_id FROM ledger_entries
+     WHERE budget_id = ? AND (${tests.join(' OR ')})`,
+    params,
+  );
+
+  await rebuildLedgerForTransactions(
+    tx,
+    rows.map((row) => row.transaction_id),
+  );
+}

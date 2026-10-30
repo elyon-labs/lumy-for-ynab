@@ -122,6 +122,9 @@ importers:
       '@lumy/money':
         specifier: workspace:*
         version: link:../money
+      '@lumy/ynab':
+        specifier: workspace:*
+        version: link:../ynab
     devDependencies:
       '@types/node':
         specifier: ^26.0.0
@@ -7974,9 +7977,7 @@ snapshots:
       metro-config: 0.87.1
       metro-runtime: 0.87.1
     transitivePeerDependencies:
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.88.0': {}
 

@@ -1,5 +1,16 @@
+/**
+ * Not anchored to the start of the statement.
+ *
+ * The ledger's derivation leads with a `WITH` clause, so the write verb is not
+ * the first word; anchoring would have reported those statements as writing to
+ * nothing, and the ledger — the table every screen reads — would never have
+ * invalidated a query. Nothing in this package runs a statement whose text
+ * contains a write verb it does not perform, and a notification that is too
+ * broad only costs a refetch where one that is too narrow shows a stale
+ * number.
+ */
 const WRITE_STATEMENT =
-  /^\s*(?:insert(?:\s+or\s+\w+)?\s+into|replace\s+into|update(?:\s+or\s+\w+)?|delete\s+from|drop\s+table(?:\s+if\s+exists)?|alter\s+table|create\s+table(?:\s+if\s+not\s+exists)?)\s+(?:(?:main|temp)\.)?["'`[]?([A-Za-z_][A-Za-z0-9_]*)/i;
+  /(?:insert(?:\s+or\s+\w+)?\s+into|replace\s+into|update(?:\s+or\s+\w+)?|delete\s+from|drop\s+table(?:\s+if\s+exists)?|alter\s+table|create\s+table(?:\s+if\s+not\s+exists)?)\s+(?:(?:main|temp)\.)?["'`[]?([A-Za-z_][A-Za-z0-9_]*)/i;
 
 /**
  * The table a statement writes to, or null if it writes to none.
