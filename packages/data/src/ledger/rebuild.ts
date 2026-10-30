@@ -115,8 +115,16 @@ const LEAVES = `
     JOIN subtransactions s ON s.transaction_id = t.id AND s.deleted = 0
   )`;
 
-const INSERT = `
-  INSERT INTO ledger_entries (
+/**
+ * The derivation, as one `INSERT ... SELECT` into whichever table is named.
+ *
+ * The target is a parameter only so the verifier can derive into a table of
+ * its own and compare: there is one derivation, and both the rebuild and the
+ * check run this statement.
+ */
+function insertInto(table: string): string {
+  return `
+  INSERT INTO ${table} (
     entry_id, budget_id, transaction_id, is_subtransaction,
     date, month, account_id,
     payee_id, payee_name, category_id, category_group_id,
@@ -134,6 +142,9 @@ const INSERT = `
   FROM leaves l
   LEFT JOIN payees p ON p.id = l.payee_id
   LEFT JOIN categories c ON c.id = l.category_id`;
+}
+
+const INSERT = insertInto('ledger_entries');
 
 /**
  * The transactions a rebuild has to cover, given the ones that changed.
@@ -205,10 +216,26 @@ export async function rebuildLedgerForTransactions(
  * budget.
  */
 export async function rebuildLedgerForBudget(tx: Queryable, budgetId: string): Promise<void> {
+  await tx.run('DELETE FROM ledger_entries WHERE budget_id = ?', [budgetId]);
+  await deriveLedgerInto(tx, 'ledger_entries', budgetId);
+}
+
+/**
+ * Derives a budget's entries into the named table, which must have the same
+ * columns as `ledger_entries`.
+ *
+ * What the verifier derives into, so that what it compares the stored table
+ * against is this statement's output rather than a second opinion about what
+ * the rules are.
+ */
+export async function deriveLedgerInto(
+  tx: Queryable,
+  table: string,
+  budgetId: string,
+): Promise<void> {
   const scope = 'WITH scope(id) AS (SELECT id FROM transactions WHERE budget_id = ?)';
 
-  await tx.run('DELETE FROM ledger_entries WHERE budget_id = ?', [budgetId]);
-  await tx.run(`${scope}, ${LEAVES} ${INSERT}`, [budgetId]);
+  await tx.run(`${scope}, ${LEAVES} ${insertInto(table)}`, [budgetId]);
 }
 
 /**

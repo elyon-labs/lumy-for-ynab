@@ -79,7 +79,3 @@ export async function deleteWhereIn(
   }
 }
 
-/** SQLite has no boolean type; the schema stores these as 0 and 1. */
-export function flag(value: boolean): number {
-  return value ? 1 : 0;
-}
