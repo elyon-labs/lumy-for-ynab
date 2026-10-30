@@ -1,0 +1,16 @@
+{
+  "data": {
+    "payees": [
+      { "id": "p-grocer", "name": "Grocer", "transfer_account_id": null, "deleted": false },
+      { "id": "p-opening", "name": "Starting Balance", "transfer_account_id": null, "deleted": false },
+      {
+        "id": "p-transfer-savings",
+        "name": "Transfer : Savings",
+        "transfer_account_id": "a-savings",
+        "deleted": false
+      },
+      { "id": "p-gone", "name": "Removed Payee", "transfer_account_id": null, "deleted": true }
+    ],
+    "server_knowledge": 415
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "data": {
+    "accounts": [
+      {
+        "id": "a-checking",
+        "name": "Checking",
+        "type": "checking",
+        "on_budget": true,
+        "closed": false,
+        "note": null,
+        "balance": 1457690,
+        "cleared_balance": 1457690,
+        "uncleared_balance": 0,
+        "transfer_payee_id": "p-transfer-checking",
+        "direct_import_linked": true,
+        "direct_import_in_error": false,
+        "last_reconciled_at": "2026-10-01T09:14:00+00:00",
+        "debt_original_balance": null,
+        "debt_interest_rates": {},
+        "debt_minimum_payments": {},
+        "debt_escrow_amounts": {},
+        "deleted": false
+      },
+      {
+        "id": "a-mortgage",
+        "name": "Mortgage",
+        "type": "mortgage",
+        "on_budget": false,
+        "closed": false,
+        "note": null,
+        "balance": -214300000,
+        "cleared_balance": -214300000,
+        "uncleared_balance": 0,
+        "transfer_payee_id": "p-transfer-mortgage",
+        "direct_import_linked": false,
+        "direct_import_in_error": false,
+        "last_reconciled_at": null,
+        "debt_original_balance": -250000000,
+        "debt_interest_rates": { "2026-09-01": 4250, "2026-10-01": 4250 },
+        "debt_minimum_payments": { "2026-10-01": 1420000 },
+        "debt_escrow_amounts": { "2026-10-01": 310000 },
+        "deleted": false
+      },
+      {
+        "id": "a-old",
+        "name": "Closed Card",
+        "type": "creditCard",
+        "on_budget": true,
+        "closed": true,
+        "balance": 0,
+        "debt_interest_rates": {},
+        "debt_minimum_payments": {},
+        "debt_escrow_amounts": {},
+        "deleted": true
+      }
+    ],
+    "server_knowledge": 980
+  }
+}

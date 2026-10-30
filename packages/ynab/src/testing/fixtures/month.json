@@ -1,0 +1,38 @@
+{
+  "data": {
+    "month": {
+      "month": "2026-10-01",
+      "note": null,
+      "income": 1500000,
+      "budgeted": 600000,
+      "activity": -100310,
+      "to_be_budgeted": 900000,
+      "age_of_money": 41,
+      "deleted": false,
+      "categories": [
+        {
+          "id": "c-groceries",
+          "category_group_id": "g-everyday",
+          "name": "Groceries",
+          "hidden": false,
+          "budgeted": 500000,
+          "activity": -82310,
+          "balance": 417690,
+          "goal_type": "NEED",
+          "deleted": false
+        },
+        {
+          "id": "c-fun",
+          "category_group_id": "g-everyday",
+          "name": "Fun Money",
+          "hidden": false,
+          "budgeted": 100000,
+          "activity": -18000,
+          "balance": 82000,
+          "goal_type": null,
+          "deleted": false
+        }
+      ]
+    }
+  }
+}
