@@ -82,6 +82,10 @@ export const ledgerEntries = sqliteTable(
     // `ORDER BY date DESC, entry_id DESC` — reads straight off the index
     // instead of sorting the page afterwards.
     index('ledger_by_date').on(table.budgetId, table.date, table.entryId),
+    // The transaction list's page. A transaction is a group of entries, so its
+    // keyset reads `(date, transaction_id)` and needs that pair ordered —
+    // `ledger_by_date` ends in `entry_id` and would make it a sort.
+    index('ledger_by_date_transaction').on(table.budgetId, table.date, table.transactionId),
     // Category rollups per month.
     index('ledger_by_category_month').on(table.budgetId, table.month, table.categoryId),
     // Payee rollups per month.
