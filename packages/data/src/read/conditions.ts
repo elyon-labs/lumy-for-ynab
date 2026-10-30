@@ -36,6 +36,12 @@ export type LedgerCondition =
   | { readonly test: 'isTransfer' }
   | { readonly test: 'isStartingBalance' };
 
+/** A statement and the values bound to it, in the order it reads them. */
+export interface CompiledStatement {
+  sql: string;
+  params: readonly SqlValue[];
+}
+
 export interface CompiledCondition {
   /** A boolean expression over the columns of `ledger_entries`. */
   sql: string;
@@ -77,6 +83,19 @@ function definite(sql: string): string {
   return `COALESCE(${sql}, 0)`;
 }
 
+/**
+ * How a column is written into the statement.
+ *
+ * An aggregate joins `categories`, `payees`, and `accounts`, and those carry
+ * columns of their own named `budget_id`, `category_group_id`, and `name`. So
+ * a caller that joins anything passes the alias of `ledger_entries`, and every
+ * column the compiler emits is qualified with it.
+ */
+export interface CompileOptions {
+  /** The alias of `ledger_entries` in the statement this clause goes into. */
+  table?: string;
+}
+
 /** `column IN (…)`, with `null` in the list meaning the column is null. */
 function matchesAnyOf(
   column: string,
@@ -106,10 +125,11 @@ function combine(
   branches: readonly LedgerCondition[],
   operator: 'AND' | 'OR',
   empty: string,
+  options: CompileOptions,
 ): CompiledCondition {
   if (branches.length === 0) return { sql: empty, params: [] };
 
-  const compiled = branches.map(compileCondition);
+  const compiled = branches.map((branch) => compileCondition(branch, options));
   if (compiled.length === 1) return compiled[0];
 
   return {
@@ -125,16 +145,22 @@ function combine(
  * typed cannot become SQL. The column names are the engine's own and are the
  * only thing written into the statement.
  */
-export function compileCondition(condition: LedgerCondition): CompiledCondition {
+export function compileCondition(
+  condition: LedgerCondition,
+  options: CompileOptions = {},
+): CompiledCondition {
+  const column = (name: string): string =>
+    options.table === undefined ? name : `${options.table}.${name}`;
+
   switch (condition.test) {
     case 'all':
-      return combine(condition.of, 'AND', MATCHES_EVERYTHING);
+      return combine(condition.of, 'AND', MATCHES_EVERYTHING, options);
 
     case 'any':
-      return combine(condition.of, 'OR', MATCHES_NOTHING);
+      return combine(condition.of, 'OR', MATCHES_NOTHING, options);
 
     case 'not': {
-      const inner = compileCondition(condition.of);
+      const inner = compileCondition(condition.of, options);
 
       return { sql: `NOT ${inner.sql}`, params: inner.params };
     }
@@ -143,11 +169,11 @@ export function compileCondition(condition: LedgerCondition): CompiledCondition 
       const parts: string[] = [];
       const params: SqlValue[] = [];
       if (condition.from != null) {
-        parts.push('date >= ?');
+        parts.push(`${column('date')} >= ?`);
         params.push(condition.from);
       }
       if (condition.to != null) {
-        parts.push('date <= ?');
+        parts.push(`${column('date')} <= ?`);
         params.push(condition.to);
       }
       if (parts.length === 0) return { sql: MATCHES_EVERYTHING, params: [] };
@@ -157,48 +183,48 @@ export function compileCondition(condition: LedgerCondition): CompiledCondition 
 
     case 'hasAccountId':
       // `account_id` is not nullable: a leg is always in its parent's account.
-      return matchesAnyOf('account_id', condition.ids, false);
+      return matchesAnyOf(column('account_id'), condition.ids, false);
 
     case 'hasPayeeId':
-      return matchesAnyOf('payee_id', condition.ids, true);
+      return matchesAnyOf(column('payee_id'), condition.ids, true);
 
     case 'hasCategoryId':
-      return matchesAnyOf('category_id', condition.ids, true);
+      return matchesAnyOf(column('category_id'), condition.ids, true);
 
     case 'hasCategoryGroupId':
-      return matchesAnyOf('category_group_id', condition.ids, true);
+      return matchesAnyOf(column('category_group_id'), condition.ids, true);
 
     case 'hasFlagColor':
-      return matchesAnyOf('flag_color', condition.colors, true);
+      return matchesAnyOf(column('flag_color'), condition.colors, true);
 
     case 'hasMemoKeyword':
       // Case-insensitive for ASCII, which is what SQLite's `LIKE` does without
       // ICU. Neither driver carries ICU, so a keyword that differs from the
       // memo only outside ASCII will not match.
       return {
-        sql: definite(`memo LIKE ? ESCAPE '${LIKE_ESCAPE}'`),
+        sql: definite(`${column('memo')} LIKE ? ESCAPE '${LIKE_ESCAPE}'`),
         params: [`%${escapeForLike(condition.keyword)}%`],
       };
 
     case 'isIncome':
-      return { sql: 'is_income = 1', params: [] };
+      return { sql: `${column('is_income')} = 1`, params: [] };
 
     case 'isExpense':
-      return { sql: 'is_expense = 1', params: [] };
+      return { sql: `${column('is_expense')} = 1`, params: [] };
 
     case 'isTransfer':
-      return { sql: 'is_transfer = 1', params: [] };
+      return { sql: `${column('is_transfer')} = 1`, params: [] };
 
     case 'isStartingBalance':
-      return { sql: 'is_starting_balance = 1', params: [] };
+      return { sql: `${column('is_starting_balance')} = 1`, params: [] };
 
     // Inflow and outflow are the sign of the amount, where income and expense
     // are the classification. A refund is an inflow and not income.
     case 'isInflow':
-      return { sql: 'amount > 0', params: [] };
+      return { sql: `${column('amount')} > 0`, params: [] };
 
     case 'isOutflow':
-      return { sql: 'amount < 0', params: [] };
+      return { sql: `${column('amount')} < 0`, params: [] };
   }
 }
 

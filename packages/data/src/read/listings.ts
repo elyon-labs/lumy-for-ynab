@@ -4,9 +4,12 @@ import type { Queryable, SqlValue } from '../adapters/types';
 import {
   compileCondition,
   conditionForFilter,
+  type CompiledStatement,
   type LedgerCondition,
   type LedgerFilter,
 } from './conditions';
+
+export type { CompiledStatement };
 
 /**
  * The listings: the only reads in this package that return rows.
@@ -45,11 +48,6 @@ export interface ListOptions {
   condition?: LedgerCondition;
   limit: number;
   cursor?: LedgerCursor | null;
-}
-
-export interface CompiledStatement {
-  sql: string;
-  params: readonly SqlValue[];
 }
 
 export interface LedgerEntryRow {

@@ -116,11 +116,12 @@ const INDEXED_QUERIES: Record<string, string> = {
     WHERE budget_id = ? AND month BETWEEN ? AND ?
     GROUP BY month, payee_id`,
 
-  // Account balances over time, which net worth and days buffer walk.
-  ledger_by_account_date: `
-    SELECT account_id, date, SUM(amount) AS total FROM ledger_entries
-    WHERE budget_id = ? AND account_id = ? AND date <= ?
-    GROUP BY account_id, date`,
+  // The balance rollback net worth and the days buffer are built on. `amount`
+  // is in the key, so the sum is covered and the group needs no sort.
+  ledger_by_account_month: `
+    SELECT account_id, month, SUM(amount) AS delta FROM ledger_entries
+    WHERE budget_id = ? AND month <= ?
+    GROUP BY account_id, month`,
 
   // Category group rollups.
   ledger_by_group_month: `
@@ -133,12 +134,14 @@ const INDEXED_QUERIES: Record<string, string> = {
     SELECT entry_id FROM ledger_entries
     WHERE transaction_id = ?`,
 
-  // Spend by month, the hot path. The partial index carries only the rows
-  // that pass the predicate every one of these queries also carries.
+  // Spend by month and by category, the hot path. Partial, because every one
+  // of those queries carries the same predicate, and wide enough to answer
+  // them without reading the table — a spend rollup would otherwise fetch
+  // every matching row just to sum it.
   ledger_spend_by_month: `
-    SELECT month, SUM(amount) AS total FROM ledger_entries
+    SELECT month, category_id, SUM(amount) AS total FROM ledger_entries
     WHERE budget_id = ? AND is_expense = 1
-    GROUP BY month`,
+    GROUP BY month, category_id`,
 };
 
 /** A parameter for every `?` in the statement. The values do not matter. */

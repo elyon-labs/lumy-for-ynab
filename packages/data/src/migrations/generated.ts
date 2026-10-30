@@ -250,4 +250,16 @@ export const GENERATED_MIGRATIONS: readonly Migration[] = [
       `CREATE INDEX \`ledger_by_date_transaction\` ON \`ledger_entries\` (\`budget_id\`,\`date\`,\`transaction_id\`);`,
     ],
   },
+  {
+    id: 4,
+    name: 'cover_the_rollup_indexes',
+    statements: [
+      `DROP INDEX \`ledger_by_account_date\`;`,
+      `DROP INDEX \`ledger_by_group_month\`;`,
+      `DROP INDEX \`ledger_spend_by_month\`;`,
+      `CREATE INDEX \`ledger_by_account_month\` ON \`ledger_entries\` (\`budget_id\`,\`account_id\`,\`month\`,\`amount\`);`,
+      `CREATE INDEX \`ledger_by_group_month\` ON \`ledger_entries\` (\`budget_id\`,\`category_group_id\`,\`month\`,\`amount\`);`,
+      `CREATE INDEX \`ledger_spend_by_month\` ON \`ledger_entries\` (\`budget_id\`,\`month\`,\`category_id\`,\`amount\`) WHERE is_expense = 1;`,
+    ],
+  },
 ];
