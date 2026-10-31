@@ -3,9 +3,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { ThemeProvider, useAppFonts } from '@lumy/ui';
+import { useAppFonts } from '@lumy/ui';
 
 import { DatabaseProvider } from '@/data';
+import { AppThemeProvider, SelectedBudgetProvider, SelectedPeriodProvider } from '@/settings';
 
 // Held until the typeface is ready, so the first frame is never a fallback
 // face that reflows the moment Outfit loads.
@@ -28,13 +29,18 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      {/* The stored theme preference arrives with the settings store, so this
-          follows the device until then. */}
-      <ThemeProvider>
-        <DatabaseProvider>
-          <Stack screenOptions={{ headerShown: false }} />
-        </DatabaseProvider>
-      </ThemeProvider>
+      {/* Everything that reads a setting is inside the database, because that
+          is where the settings are. Each of these renders its default until
+          the first read lands, so nothing below waits on a guard. */}
+      <DatabaseProvider>
+        <AppThemeProvider>
+          <SelectedBudgetProvider>
+            <SelectedPeriodProvider>
+              <Stack screenOptions={{ headerShown: false }} />
+            </SelectedPeriodProvider>
+          </SelectedBudgetProvider>
+        </AppThemeProvider>
+      </DatabaseProvider>
     </SafeAreaProvider>
   );
 }

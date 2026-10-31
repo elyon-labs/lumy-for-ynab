@@ -22,5 +22,9 @@ export default defineConfig({
   },
   test: {
     include: ['src/**/*.test.ts'],
+    // A fixed timezone with a real offset from UTC, so that a test about what
+    // day it is locally cannot pass by accident on a runner that happens to be
+    // set to UTC. `today` is the one place the app reads a clock for a date.
+    env: { TZ: 'America/New_York' },
   },
 });

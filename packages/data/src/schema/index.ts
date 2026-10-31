@@ -21,4 +21,5 @@ export * from './months';
 export * from './payees';
 export * from './scheduledTransactions';
 export * from './serverKnowledge';
+export * from './settings';
 export * from './transactions';

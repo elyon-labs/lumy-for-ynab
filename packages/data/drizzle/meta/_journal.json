@@ -29,6 +29,13 @@
       "when": 1793323265914,
       "tag": "0003_cover_the_rollup_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1793450186143,
+      "tag": "0004_settings_store",
+      "breakpoints": true
     }
   ]
 }

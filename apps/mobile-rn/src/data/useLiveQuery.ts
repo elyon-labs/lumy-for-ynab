@@ -1,7 +1,7 @@
 import type { DatabaseAdapter, ReadName } from '@lumy/data';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { skipToken, useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { useDatabase } from './DatabaseProvider';
+import { useDatabaseState } from './DatabaseProvider';
 import { queryKey } from './queryKeys';
 
 /**
@@ -18,6 +18,11 @@ import { queryKey } from './queryKeys';
  * `packages/data` unchanged. If a wrapper has to reshape the result, the
  * reshaping belongs in `packages/data` instead — a hook returns exactly what
  * its screen renders.
+ *
+ * It can be called above the guard that waits for the database. While one is
+ * still opening the query is skipped and the result is pending, which is what
+ * lets the providers that hold the theme preference and the selected budget
+ * sit at the root of the app rather than inside a ready check.
  */
 export function useLiveQuery<T>(
   read: ReadName,
@@ -25,10 +30,11 @@ export function useLiveQuery<T>(
   params: readonly unknown[],
   query: (db: DatabaseAdapter) => Promise<T>,
 ): UseQueryResult<T, Error> {
-  const { adapter } = useDatabase();
+  const state = useDatabaseState();
+  const adapter = state.status === 'ready' ? state.database.adapter : null;
 
   return useQuery({
     queryKey: queryKey(read, budgetId, ...params),
-    queryFn: () => query(adapter),
+    queryFn: adapter === null ? skipToken : () => query(adapter),
   });
 }

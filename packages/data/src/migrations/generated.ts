@@ -262,4 +262,16 @@ export const GENERATED_MIGRATIONS: readonly Migration[] = [
       `CREATE INDEX \`ledger_spend_by_month\` ON \`ledger_entries\` (\`budget_id\`,\`month\`,\`category_id\`,\`amount\`) WHERE is_expense = 1;`,
     ],
   },
+  {
+    id: 5,
+    name: 'settings_store',
+    statements: [
+      `CREATE TABLE \`settings\` (
+	\`key\` text NOT NULL,
+	\`scope\` text DEFAULT '' NOT NULL,
+	\`value\` text NOT NULL,
+	PRIMARY KEY(\`key\`, \`scope\`)
+);`,
+    ],
+  },
 ];

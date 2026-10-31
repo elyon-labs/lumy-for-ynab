@@ -4,4 +4,5 @@ export * from './ledger';
 export * from './migrate';
 export * from './migrations';
 export * from './read';
+export * from './settings';
 export * from './sync';

@@ -1,11 +1,19 @@
 import { StyleSheet, View } from 'react-native';
 
-import { rebuildLedgerForBudget, totals, type DatabaseAdapter } from '@lumy/data';
+import {
+  PERIOD_TYPES,
+  Settings,
+  THEME_PREFERENCES,
+  rebuildLedgerForBudget,
+  totals,
+  type DatabaseAdapter,
+} from '@lumy/data';
 import { DEFAULT_CURRENCY_FORMAT, milliunits } from '@lumy/money';
 import { Spacing } from '@lumy/theme';
 import { Button, Card, ListRow, Money, Screen, SectionHeader, Text } from '@lumy/ui';
 
 import { useDatabase, useDatabaseState, useLiveQuery } from '@/data';
+import { useSelectedPeriod, useSetting } from '@/settings';
 
 /**
  * A placeholder so the skeleton runs, standing in until the navigation shell
@@ -56,9 +64,55 @@ export default function Index() {
           ) : null}
         </Card>
 
+        <StoredSettings />
+
         {state.status === 'ready' ? <LiveLedger /> : null}
       </View>
     </Screen>
+  );
+}
+
+/**
+ * The settings store, and the one part of it the node tests cannot reach.
+ *
+ * Tapping the appearance row writes one row to the settings table. Nothing
+ * tells the theme to change: the write notifies, the subscriber invalidates
+ * the settings read, `AppThemeProvider` re-reads it, and the whole screen
+ * repaints. The period row is the same path reaching a resolved date range.
+ */
+function StoredSettings() {
+  const { value: preference, setValue: setPreference } = useSetting(Settings.themePreference);
+  const { period, range, setPeriod } = useSelectedPeriod();
+
+  const nextPreference =
+    THEME_PREFERENCES[(THEME_PREFERENCES.indexOf(preference) + 1) % THEME_PREFERENCES.length];
+  const nextPeriodType = PERIOD_TYPES[(PERIOD_TYPES.indexOf(period.type) + 1) % PERIOD_TYPES.length];
+
+  return (
+    <>
+      <SectionHeader title="Settings" />
+      <Card flush>
+        <ListRow
+          title="Appearance"
+          subtitle="Stored in SQLite, read back through the same invalidation as the ledger"
+          accessory={<Text tone="muted">{preference}</Text>}
+          onPress={() => {
+            void setPreference(nextPreference);
+          }}
+        />
+        <ListRow
+          title="Period"
+          subtitle={`${range.from} to ${range.to}`}
+          accessory={<Text tone="muted">{period.type}</Text>}
+          onPress={() => {
+            // Custom carries its own dates, which there is no picker for yet.
+            void setPeriod(
+              nextPeriodType === 'custom' ? { type: 'thisMonth' } : { type: nextPeriodType },
+            );
+          }}
+        />
+      </Card>
+    </>
   );
 }
 
