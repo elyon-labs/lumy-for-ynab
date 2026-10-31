@@ -1,18 +1,26 @@
 import { StyleSheet, View } from 'react-native';
 
+import { rebuildLedgerForBudget, totals, type DatabaseAdapter } from '@lumy/data';
 import { DEFAULT_CURRENCY_FORMAT, milliunits } from '@lumy/money';
 import { Spacing } from '@lumy/theme';
-import { Card, ListRow, Money, Screen, SectionHeader, Text } from '@lumy/ui';
+import { Button, Card, ListRow, Money, Screen, SectionHeader, Text } from '@lumy/ui';
 
-import { useDatabase } from '@/data/useDatabase';
+import { useDatabase, useDatabaseState, useLiveQuery } from '@/data';
 
 /**
  * A placeholder so the skeleton runs, standing in until the navigation shell
- * replaces it. It renders an amount because that is the one thing worth
- * checking on a device before the data layer exists.
+ * replaces it.
+ *
+ * What it is for now is the one thing the node tests cannot cover: that the
+ * Expo adapter, the schema, and the change notification all work on a device.
+ * The button writes a transaction and the figures above it change without
+ * anything asking them to, which is the whole of the app's reactivity in one
+ * tap.
  */
+const DEMO_BUDGET = 'demo-budget';
+
 export default function Index() {
-  const { sqliteVersion, schema, tables, error } = useDatabase();
+  const state = useDatabaseState();
 
   return (
     <Screen title="Lumy">
@@ -25,39 +33,129 @@ export default function Index() {
           </Text>
         </Card>
 
-        <Card flush>
-          <ListRow
-            title="Inflow"
-            accessory={
-              <Money amount={milliunits(1_234_560)} format={DEFAULT_CURRENCY_FORMAT} colorBySign />
-            }
-          />
-          <ListRow
-            title="Outflow"
-            accessory={
-              <Money amount={milliunits(-98_700)} format={DEFAULT_CURRENCY_FORMAT} colorBySign />
-            }
-          />
-        </Card>
         <SectionHeader title="Database" />
         <Card flush>
           <ListRow
             title="SQLite"
-            accessory={<Text tone="muted">{sqliteVersion ?? 'opening'}</Text>}
+            accessory={
+              <Text tone="muted">
+                {state.status === 'ready' ? state.database.sqliteVersion : state.status}
+              </Text>
+            }
           />
           <ListRow
             title="Schema"
-            accessory={<Text tone="muted">{schema === null ? 'opening' : String(schema)}</Text>}
+            accessory={
+              <Text tone="muted">
+                {state.status === 'ready' ? String(state.database.schema) : state.status}
+              </Text>
+            }
           />
-          <ListRow
-            title="Tables"
-            accessory={<Text tone="muted">{tables === null ? 'opening' : String(tables)}</Text>}
-          />
-          {error === null ? null : <ListRow title="Error" subtitle={error.message} destructive />}
+          {state.status === 'failed' ? (
+            <ListRow title="Error" subtitle={state.error.message} destructive />
+          ) : null}
         </Card>
+
+        {state.status === 'ready' ? <LiveLedger /> : null}
       </View>
     </Screen>
   );
+}
+
+/**
+ * Reads the ledger and re-reads it when something writes to it.
+ *
+ * Nothing here subscribes to anything. The figures come from a query key, and
+ * the one subscriber in `liveQueries.ts` invalidates that key when a commit
+ * touches a table the read depends on.
+ */
+function LiveLedger() {
+  const { adapter } = useDatabase();
+  const { data } = useLiveQuery('totals', DEMO_BUDGET, [], (db) =>
+    totals(db, { budgetId: DEMO_BUDGET }),
+  );
+
+  return (
+    <>
+      <SectionHeader title="Ledger" />
+      <Card flush>
+        <ListRow
+          title="Inflow"
+          accessory={
+            <Money
+              amount={data?.inflow ?? milliunits(0)}
+              format={DEFAULT_CURRENCY_FORMAT}
+              colorBySign
+            />
+          }
+        />
+        <ListRow
+          title="Outflow"
+          accessory={
+            <Money
+              amount={data?.outflow ?? milliunits(0)}
+              format={DEFAULT_CURRENCY_FORMAT}
+              colorBySign
+            />
+          }
+        />
+        <ListRow title="Entries" accessory={<Text tone="muted">{data?.count ?? 0}</Text>} />
+      </Card>
+      <Button
+        label="Add a transaction"
+        onPress={() => {
+          void addDemoTransaction(adapter);
+        }}
+      />
+    </>
+  );
+}
+
+/**
+ * Writes one transaction and re-derives the ledger for it.
+ *
+ * Stands in for the sync engine on a device. It goes through the adapter's
+ * transaction, so it produces exactly the notification a real sync page
+ * produces.
+ */
+async function addDemoTransaction(db: DatabaseAdapter): Promise<void> {
+  const id = `demo-${Date.now()}`;
+  const outflow = Math.random() < 0.8;
+
+  await db.transaction(async (tx) => {
+    await tx.run(
+      `INSERT INTO budgets (id, name) VALUES (?, ?)
+       ON CONFLICT (id) DO NOTHING`,
+      [DEMO_BUDGET, 'Demo'],
+    );
+    await tx.run(
+      `INSERT INTO accounts (id, budget_id, name, type, on_budget, closed, deleted, balance)
+       VALUES (?, ?, 'Demo account', 'checking', 1, 0, 0, 0)
+       ON CONFLICT (id) DO NOTHING`,
+      ['demo-account', DEMO_BUDGET],
+    );
+    await tx.run(
+      `INSERT INTO category_groups (id, budget_id, name, hidden, deleted, sort_order)
+       VALUES (?, ?, 'Demo group', 0, 0, 0)
+       ON CONFLICT (id) DO NOTHING`,
+      ['demo-group', DEMO_BUDGET],
+    );
+    await tx.run(
+      `INSERT INTO categories
+         (id, budget_id, category_group_id, name, hidden, deleted, sort_order)
+       VALUES (?, ?, 'demo-group', 'Demo category', 0, 0, 0)
+       ON CONFLICT (id) DO NOTHING`,
+      ['demo-category', DEMO_BUDGET],
+    );
+    await tx.run(
+      `INSERT INTO transactions
+         (id, budget_id, date, account_id, amount, category_id, cleared, approved, deleted)
+       VALUES (?, ?, date('now'), 'demo-account', ?, 'demo-category', 'cleared', 1, 0)`,
+      [id, DEMO_BUDGET, outflow ? -Math.ceil(Math.random() * 25_000) : 250_000],
+    );
+
+    await rebuildLedgerForBudget(tx, DEMO_BUDGET);
+  });
 }
 
 const styles = StyleSheet.create({

@@ -48,6 +48,7 @@ const KINDS = {
   // or arithmetic over one row's own columns.
   compileCondition: 'pure',
   conditionForFilter: 'pure',
+  readsAffectedBy: 'pure',
   ledgerEntryPageStatement: 'pure',
   transactionPageStatement: 'pure',
   sumByStatement: 'pure',
@@ -62,6 +63,17 @@ const KINDS = {
 } as const satisfies Record<string, 'listing' | 'aggregate' | 'pure'>;
 
 describe('the read API', () => {
+  it('declares the tables every listing and aggregate reads', () => {
+    // A read with no declaration is a read nothing invalidates, which shows up
+    // as a screen that keeps a number after the sync that changed it.
+    const reads = Object.entries(KINDS)
+      .filter(([, kind]) => kind !== 'pure')
+      .map(([name]) => name)
+      .sort();
+
+    expect(reads).toEqual([...read.READ_NAMES].sort());
+  });
+
   it('declares every exported function as a listing, an aggregate, or pure', () => {
     const exported = Object.entries(read)
       .filter(([, value]) => typeof value === 'function')
