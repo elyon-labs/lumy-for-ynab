@@ -5,12 +5,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAppFonts } from '@lumy/ui';
 
+import { AuthProvider } from '@/auth';
 import { DatabaseProvider } from '@/data';
+import { initI18n } from '@/i18n';
 import { AppThemeProvider, SelectedBudgetProvider, SelectedPeriodProvider } from '@/settings';
 
 // Held until the typeface is ready, so the first frame is never a fallback
 // face that reflows the moment Outfit loads.
 void SplashScreen.preventAutoHideAsync();
+
+// Before the first render, because a screen reading a key that is not loaded
+// yet renders the key.
+initI18n();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useAppFonts();
@@ -36,7 +42,11 @@ export default function RootLayout() {
         <AppThemeProvider>
           <SelectedBudgetProvider>
             <SelectedPeriodProvider>
-              <Stack screenOptions={{ headerShown: false }} />
+              {/* Inside the settings providers, because sending a link records
+                  when — which is what the resend cooldown is measured from. */}
+              <AuthProvider>
+                <Stack screenOptions={{ headerShown: false }} />
+              </AuthProvider>
             </SelectedPeriodProvider>
           </SelectedBudgetProvider>
         </AppThemeProvider>
