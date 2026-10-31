@@ -18,9 +18,22 @@ export interface AppConfig {
   /** The scheme a magic link comes back to. No URL bar on a phone. */
   deepLinkScheme: string;
   supportEmail: string;
+  /** Lumy's YNAB OAuth application. The secret lives on the token server. */
+  ynabClientId: string;
+  ynabAuthorizeUrl: string;
+  /** Lumy's own token server, which holds the client secret. */
+  ynabTokenUrl: string;
 }
 
-const REQUIRED = ['supabaseUrl', 'supabaseAnonKey', 'deepLinkScheme', 'supportEmail'] as const;
+const REQUIRED = [
+  'supabaseUrl',
+  'supabaseAnonKey',
+  'deepLinkScheme',
+  'supportEmail',
+  'ynabClientId',
+  'ynabAuthorizeUrl',
+  'ynabTokenUrl',
+] as const;
 
 /**
  * Reads the config out of whatever `extra` holds, or says what is missing.
@@ -50,5 +63,8 @@ export function parseConfig(extra: unknown): AppConfig {
     supabaseAnonKey: candidate.supabaseAnonKey as string,
     deepLinkScheme: candidate.deepLinkScheme as string,
     supportEmail: candidate.supportEmail as string,
+    ynabClientId: candidate.ynabClientId as string,
+    ynabAuthorizeUrl: candidate.ynabAuthorizeUrl as string,
+    ynabTokenUrl: candidate.ynabTokenUrl as string,
   };
 }

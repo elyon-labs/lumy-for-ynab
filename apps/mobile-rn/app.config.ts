@@ -19,6 +19,9 @@ const extra = {
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? '',
   deepLinkScheme: BUNDLE_IDENTIFIER,
   supportEmail: process.env.SUPPORT_EMAIL ?? '',
+  ynabClientId: process.env.YNAB_CLIENT_ID ?? '',
+  ynabAuthorizeUrl: process.env.YNAB_AUTHORIZE_URL ?? '',
+  ynabTokenUrl: process.env.YNAB_TOKEN_URL ?? '',
 };
 
 const config: ExpoConfig = {

@@ -48,6 +48,24 @@ export const en = {
       deleteFailed: 'Your account was not deleted. Please try again.',
     },
 
+    ynab: {
+      connectTitle: 'Connect YNAB',
+      connectExplainer:
+        'Lumy reads your YNAB budget to show you where your money goes. Connecting uses OAuth, so YNAB never shares your password with Lumy.',
+      connectNote: 'You will be taken to YNAB to approve it, then brought back here.',
+      connect: 'Connect YNAB account',
+      connectFailed: 'YNAB could not be connected. Please try again.',
+      disconnect: 'Disconnect YNAB',
+      readOnly: 'Read only',
+      canWrite: 'Read and write',
+
+      writeAccessTitle: 'Just a sec',
+      writeAccessExplainer:
+        'Before Lumy can create transactions, YNAB needs your permission to write to your budget. Lumy will never write to your budget without being asked.',
+      grantWriteAccess: 'Grant write access',
+      grantWriteAccessFailed: 'Write access was not granted. Please try again.',
+    },
+
     changeEmail: {
       title: 'Change email',
       explainer:

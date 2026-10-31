@@ -8,3 +8,4 @@ export * from './schemas/months';
 export * from './schemas/payees';
 export * from './schemas/scheduledTransactions';
 export * from './schemas/transactions';
+export * from './schemas/user';

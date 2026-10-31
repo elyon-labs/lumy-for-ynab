@@ -203,6 +203,15 @@ export const Settings = {
    */
   lastAuthLinkSentAt: globalSetting<string | null>('last_auth_link_sent_at', null, asNullableString),
 
+  /**
+   * The YNAB account the authorised token belongs to.
+   *
+   * Learned from `GET /user` once a token exists, and what the `users` row in
+   * Supabase pairs the Supabase account with — so the same person on another
+   * device is recognised as themselves. Null until YNAB has been authorised.
+   */
+  ynabUserId: globalSetting<string | null>('ynab_user_id', null, asNullableString),
+
   /** Spend tracker ids in the order they were dragged into. */
   spendTrackerOrder: budgetSetting<string[]>('spend_tracker_order', [], asStringList),
 

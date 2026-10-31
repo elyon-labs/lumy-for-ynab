@@ -91,6 +91,21 @@ describe('requests', () => {
   });
 });
 
+describe('the user the token belongs to', () => {
+  it('is read from /user, which is about the credential rather than a budget', async () => {
+    const { client: ynab, stub } = client([ok({ data: { user: { id: 'ynab-user-1' } } })]);
+
+    expect(await ynab.getUser()).toEqual({ id: 'ynab-user-1' });
+    expect(String(stub.only.url)).toBe(`${BASE}/user`);
+  });
+
+  it('is a malformed failure when the id is missing', async () => {
+    const { client: ynab } = client([ok({ data: { user: {} } })]);
+
+    await expect(ynab.getUser()).rejects.toMatchObject({ failure: 'malformed' });
+  });
+});
+
 describe('parsing', () => {
   it('returns budgets with their currency format flattened', async () => {
     const { client: ynab } = client([ok(fixtures.budgets)]);

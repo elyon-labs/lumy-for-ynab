@@ -10,6 +10,7 @@ import type {
   SingleMonth,
   Transaction,
   YnabClient,
+  YnabUser,
 } from '@lumy/ynab';
 
 /**
@@ -33,6 +34,8 @@ export interface StubPage<T> {
 }
 
 export interface StubScript {
+  /** Who the token belongs to. The sync engine never asks; PR 16's auth does. */
+  user?: YnabUser;
   budgets?: readonly Budget[];
   accounts?: readonly StubPage<Account>[];
   payees?: readonly StubPage<Payee>[];
@@ -97,6 +100,12 @@ export function createStubClient(script: StubScript = {}): StubClient {
 
     lastRequestFor(resource) {
       return [...requests].reverse().find((request) => request.resource === resource);
+    },
+
+    async getUser() {
+      requests.push({ resource: 'user', budgetId: '', lastKnowledgeOfServer: undefined });
+
+      return script.user ?? { id: 'ynab-user' };
     },
 
     async getBudgets() {
