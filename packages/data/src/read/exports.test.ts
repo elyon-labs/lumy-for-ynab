@@ -22,7 +22,8 @@ import { listLedgerEntries, listTransactions } from './listings';
  * by the budget's structure — or a listing that takes a limit and a cursor.
  * Nothing returns a result whose size grows with the number of entries,
  * because a screen that holds more rows than it renders is the performance
- * problem this engine was built to remove.
+ * problem this engine was built to remove. A setting is the third kind: one
+ * row, named by a key the registry already bounds.
  *
  * The map below is the declaration. A function added to the read API without
  * an entry fails this test, which is how the rule survives the surface
@@ -44,6 +45,10 @@ const KINDS = {
   daysBuffer: 'aggregate',
   targetHealth: 'aggregate',
 
+  // A setting. Bounded by the registry in `src/settings/definitions.ts`
+  // rather than by anything in the database: one key, one scope, one row.
+  getSetting: 'setting',
+
   // Pure. No database, so nothing to bound: a compiler, a statement builder,
   // or arithmetic over one row's own columns.
   compileCondition: 'pure',
@@ -60,10 +65,11 @@ const KINDS = {
   monthlyNeededForTarget: 'pure',
   monthsInTargetCadence: 'pure',
   hasRecurringTarget: 'pure',
-} as const satisfies Record<string, 'listing' | 'aggregate' | 'pure'>;
+  settingStatement: 'pure',
+} as const satisfies Record<string, 'listing' | 'aggregate' | 'pure' | 'setting'>;
 
 describe('the read API', () => {
-  it('declares the tables every listing and aggregate reads', () => {
+  it('declares the tables every read depends on', () => {
     // A read with no declaration is a read nothing invalidates, which shows up
     // as a screen that keeps a number after the sync that changed it.
     const reads = Object.entries(KINDS)
@@ -74,7 +80,7 @@ describe('the read API', () => {
     expect(reads).toEqual([...read.READ_NAMES].sort());
   });
 
-  it('declares every exported function as a listing, an aggregate, or pure', () => {
+  it('declares every exported function as a listing, an aggregate, a setting, or pure', () => {
     const exported = Object.entries(read)
       .filter(([, value]) => typeof value === 'function')
       .map(([name]) => name)

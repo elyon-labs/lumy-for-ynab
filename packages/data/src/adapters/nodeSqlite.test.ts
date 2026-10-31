@@ -164,6 +164,24 @@ describe('change notification', () => {
     await db.close();
   });
 
+  it('still reports a statement run on its own after a transaction', async () => {
+    // A transaction tracks its own writes, and the tracker the loose
+    // statements record into is not the one it uses. Sharing one variable
+    // between them left every later `run` recording somewhere nothing drained,
+    // so a settings write — the one write in the app that is a single
+    // statement — notified nothing and the screen reading it never re-read.
+    const db = await openWithTable();
+    const seen: (readonly string[])[] = [];
+    db.onTablesChanged((tables) => seen.push(tables));
+
+    await db.transaction((tx) => tx.run('INSERT INTO widgets (id, name) VALUES (?, ?)', [1, 'a']));
+    await db.run('INSERT INTO widgets (id, name) VALUES (?, ?)', [2, 'b']);
+
+    expect(seen).toEqual([['widgets'], ['widgets']]);
+
+    await db.close();
+  });
+
   it('says nothing for a read', async () => {
     const db = await openWithTable();
     const seen: (readonly string[])[] = [];

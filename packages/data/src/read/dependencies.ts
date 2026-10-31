@@ -23,7 +23,8 @@ export type ReadName =
   | 'totalBalanceOverTime'
   | 'netWorthOverTime'
   | 'daysBuffer'
-  | 'targetHealth';
+  | 'targetHealth'
+  | 'getSetting';
 
 export const READ_TABLES: Record<ReadName, readonly string[]> = {
   listLedgerEntries: ['ledger_entries', 'accounts', 'categories', 'category_groups'],
@@ -42,6 +43,10 @@ export const READ_TABLES: Record<ReadName, readonly string[]> = {
   daysBuffer: ['ledger_entries', 'accounts'],
   // The categories read carries the targets; the aggregate carries the spend.
   targetHealth: ['ledger_entries', 'categories'],
+  // The one read that is not about the ledger. It is declared here like any
+  // other so that a screen showing a setting re-reads it when the setting is
+  // written, with nothing registered per screen.
+  getSetting: ['settings'],
 };
 
 export const READ_NAMES = Object.keys(READ_TABLES) as ReadName[];

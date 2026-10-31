@@ -20,7 +20,6 @@ export function openNodeDatabase(path = ':memory:'): DatabaseAdapter {
 
   const listeners = new Set<(tables: readonly string[]) => void>();
   let depth = 0;
-  let changed = new ChangedTables();
 
   function queryable(track: ChangedTables): Queryable {
     return {
@@ -54,19 +53,23 @@ export function openNodeDatabase(path = ':memory:'): DatabaseAdapter {
     }
   }
 
-  const outer = queryable(changed);
+  // The tracker for statements run outside a transaction. It is never
+  // replaced: `loose` is captured by the queryable below, so rebinding it
+  // would leave that queryable recording into a tracker nothing drains.
+  const loose = new ChangedTables();
+  const outer = queryable(loose);
 
   return {
     async run(sql, params) {
       await outer.run(sql, params);
       // Outside a transaction each statement commits on its own, so it is also
       // its own notification.
-      if (depth === 0) announce(changed.drain());
+      if (depth === 0) announce(loose.drain());
     },
 
     async runAll(statements) {
       await outer.runAll(statements);
-      if (depth === 0) announce(changed.drain());
+      if (depth === 0) announce(loose.drain());
     },
 
     all: outer.all,
@@ -80,7 +83,7 @@ export function openNodeDatabase(path = ':memory:'): DatabaseAdapter {
       }
 
       depth += 1;
-      changed = new ChangedTables();
+      const changed = new ChangedTables();
       const tx = queryable(changed);
 
       database.exec('BEGIN IMMEDIATE');

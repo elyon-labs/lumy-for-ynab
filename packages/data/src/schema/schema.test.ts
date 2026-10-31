@@ -16,7 +16,14 @@ import {
   type Harness,
 } from '../testing';
 
-const EXPECTED_TABLES = [
+/**
+ * What the person chose, which is not cached YNAB data and does not cascade
+ * from a budget. It is listed apart from the tables that do.
+ */
+const SETTINGS_TABLE = 'settings';
+
+/** Everything scoped to a budget, directly or through something that is. */
+const CASCADING_TABLES = [
   'account_debt_months',
   'accounts',
   'budgets',
@@ -33,6 +40,8 @@ const EXPECTED_TABLES = [
   'subtransactions',
   'transactions',
 ];
+
+const EXPECTED_TABLES = [...CASCADING_TABLES, SETTINGS_TABLE].sort();
 
 async function tableNames(db: DatabaseAdapter): Promise<string[]> {
   const rows = await db.all<{ name: string }>(
@@ -63,7 +72,7 @@ describe('the schema', () => {
     await harness.close();
   });
 
-  it('creates every YNAB entity table', async () => {
+  it('creates every table', async () => {
     expect(await tableNames(db)).toEqual(EXPECTED_TABLES);
   });
 
@@ -88,9 +97,26 @@ describe('the schema', () => {
 
       await db.run('DELETE FROM budgets WHERE id = ?', [BUDGET_ID]);
 
-      for (const table of EXPECTED_TABLES) {
+      for (const table of CASCADING_TABLES) {
         expect(await count(db, table), table).toBe(0);
       }
+    });
+
+    it('keeps what the person chose', async () => {
+      // Settings are not cached YNAB data, so they do not cascade and the
+      // scope column is deliberately not called `budget_id`. A repair discards
+      // a budget and syncs it again; losing the chart order to it would be a
+      // bug, not a clean slate.
+      await seedBudget(db);
+      await db.run(`INSERT INTO settings (key, scope, value) VALUES (?, ?, ?)`, [
+        'chart_order',
+        BUDGET_ID,
+        '["net-worth"]',
+      ]);
+
+      await db.run('DELETE FROM budgets WHERE id = ?', [BUDGET_ID]);
+
+      expect(await count(db, SETTINGS_TABLE)).toBe(1);
     });
 
     it('refuses a row scoped to a budget that is not there', async () => {

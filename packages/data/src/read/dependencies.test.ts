@@ -22,6 +22,7 @@ import {
   type ReadName,
 } from './dependencies';
 import { ledgerEntryPageStatement, transactionPageStatement } from './listings';
+import { settingStatement } from './settings';
 
 /**
  * The declarations in `dependencies.ts` are only worth anything if they are
@@ -95,6 +96,8 @@ describe('read dependencies', () => {
         return [totalBalanceStatement(range)];
       case 'netWorthOverTime':
         return [netWorthStatement(range)];
+      case 'getSetting':
+        return [settingStatement('theme_preference', '')];
       default:
         return [];
     }
@@ -135,7 +138,15 @@ describe('read dependencies', () => {
 
   describe('what a write makes stale', () => {
     it('is every read over the ledger, when the ledger changes', () => {
-      expect(readsAffectedBy(['ledger_entries'])).toEqual([...READ_NAMES].sort());
+      // Every read but the settings one, which is the only read in the
+      // package that is not about a budget's data.
+      expect(readsAffectedBy(['ledger_entries'])).toEqual(
+        [...READ_NAMES].filter((name) => name !== 'getSetting').sort(),
+      );
+    });
+
+    it('is the settings read, and only it, when a setting is written', () => {
+      expect(readsAffectedBy(['settings'])).toEqual(['getSetting']);
     });
 
     it('is the reads that resolve a name, when a payee is renamed', () => {
