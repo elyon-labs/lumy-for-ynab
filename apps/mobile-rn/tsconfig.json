@@ -2,9 +2,20 @@
   "extends": "expo/tsconfig.base.json",
   "compilerOptions": {
     "strict": true,
+    // Nothing ambient unless it is asked for. Without this, every `@types`
+    // package in the workspace is in scope — including Node's, which would let
+    // app code reach a Node builtin and typecheck right up until Metro failed
+    // to resolve it on a device. Expo's own globals come from expo-env.d.ts,
+    // which is included below.
+    "types": [],
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  // Tests are typechecked by tsconfig.test.json, which is the only place Node's
+  // own types are in scope. Keeping them out here is what stops app code from
+  // reaching `node:sqlite` — or any other Node builtin — and typechecking
+  // happily right up until Metro fails to resolve it on a device.
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "src/test/**"]
 }

@@ -5,6 +5,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ThemeProvider, useAppFonts } from '@lumy/ui';
 
+import { DatabaseProvider } from '@/data';
+
 // Held until the typeface is ready, so the first frame is never a fallback
 // face that reflows the moment Outfit loads.
 void SplashScreen.preventAutoHideAsync();
@@ -29,7 +31,9 @@ export default function RootLayout() {
       {/* The stored theme preference arrives with the settings store, so this
           follows the device until then. */}
       <ThemeProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <DatabaseProvider>
+          <Stack screenOptions={{ headerShown: false }} />
+        </DatabaseProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // The node adapter and the test harness `@lumy/data/testing` exposes are
+    // reached only from here. A test never goes through Metro, so there is
+    // nothing to resolve on a device.
+    "types": ["node"]
+  },
+  "include": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test/**/*", "vitest.config.mts"],
+  "exclude": []
+}
