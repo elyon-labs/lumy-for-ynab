@@ -194,6 +194,15 @@ export const Settings = {
 
   hasOnboarded: globalSetting<boolean>('has_onboarded', false, asBoolean),
 
+  /**
+   * When a sign-in or email-change link was last emailed, ISO-8601.
+   *
+   * What the resend cooldown is measured from. It is a setting rather than
+   * component state because the cooldown has to survive the app being closed
+   * while the person goes to look at their inbox.
+   */
+  lastAuthLinkSentAt: globalSetting<string | null>('last_auth_link_sent_at', null, asNullableString),
+
   /** Spend tracker ids in the order they were dragged into. */
   spendTrackerOrder: budgetSetting<string[]>('spend_tracker_order', [], asStringList),
 

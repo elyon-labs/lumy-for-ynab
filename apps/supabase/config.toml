@@ -330,6 +330,12 @@ verify_jwt = false
 [functions.update-template]
 verify_jwt = false
 
+# The only function here that holds the service role key, so the platform
+# verifies the caller's JWT before it runs and the function reads the account
+# to delete out of that token rather than out of the request body.
+[functions.delete-account]
+verify_jwt = true
+
 [analytics]
 enabled = true
 port = 54327
