@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -12,6 +13,7 @@ import { DEFAULT_CURRENCY_FORMAT, milliunits } from '@lumy/money';
 import { Spacing } from '@lumy/theme';
 import { Button, Card, ListRow, Money, Screen, SectionHeader, Text } from '@lumy/ui';
 
+import { useAuth, useYnabAuth } from '@/auth';
 import { useDatabase, useDatabaseState, useLiveQuery } from '@/data';
 import { useSelectedPeriod, useSetting } from '@/settings';
 
@@ -66,6 +68,8 @@ export default function Index() {
 
         <StoredSettings />
 
+        <Accounts />
+
         {state.status === 'ready' ? <LiveLedger /> : null}
       </View>
     </Screen>
@@ -110,6 +114,49 @@ function StoredSettings() {
               nextPeriodType === 'custom' ? { type: 'thisMonth' } : { type: nextPeriodType },
             );
           }}
+        />
+      </Card>
+    </>
+  );
+}
+
+/**
+ * Where the two credentials stand, and the way in to each.
+ *
+ * The browser half of both flows is the part the node tests cannot reach, so
+ * these rows exist to make it one tap to check on a device.
+ */
+function Accounts() {
+  const { state: account } = useAuth();
+  const { state: ynab } = useYnabAuth();
+
+  return (
+    <>
+      <SectionHeader title="Accounts" />
+      <Card flush>
+        <ListRow
+          title="Lumy"
+          subtitle={account.status === 'signedIn' ? (account.account.email ?? undefined) : undefined}
+          accessory={<Text tone="muted">{account.status}</Text>}
+          onPress={() => {
+            router.push(account.status === 'signedIn' ? '/account' : '/sign-in');
+          }}
+          chevron
+        />
+        <ListRow
+          title="YNAB"
+          subtitle={
+            ynab.status === 'connected'
+              ? ynab.canWrite
+                ? 'Read and write'
+                : 'Read only'
+              : undefined
+          }
+          accessory={<Text tone="muted">{ynab.status}</Text>}
+          onPress={() => {
+            router.push(ynab.status === 'connected' ? '/write-access' : '/connect-ynab');
+          }}
+          chevron
         />
       </Card>
     </>

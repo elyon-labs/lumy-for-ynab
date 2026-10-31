@@ -5,7 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAppFonts } from '@lumy/ui';
 
-import { AuthProvider } from '@/auth';
+import { AuthProvider, YnabAuthProvider } from '@/auth';
 import { DatabaseProvider } from '@/data';
 import { initI18n } from '@/i18n';
 import { AppThemeProvider, SelectedBudgetProvider, SelectedPeriodProvider } from '@/settings';
@@ -45,7 +45,11 @@ export default function RootLayout() {
               {/* Inside the settings providers, because sending a link records
                   when — which is what the resend cooldown is measured from. */}
               <AuthProvider>
-                <Stack screenOptions={{ headerShown: false }} />
+                {/* Inside the account, because pairing the two writes the
+                    `users` row and that needs both ids. */}
+                <YnabAuthProvider>
+                  <Stack screenOptions={{ headerShown: false }} />
+                </YnabAuthProvider>
               </AuthProvider>
             </SelectedPeriodProvider>
           </SelectedBudgetProvider>

@@ -20,6 +20,7 @@ import {
   transactionsResponseSchema,
   type Transaction,
 } from './schemas/transactions';
+import { userResponseSchema, type YnabUser } from './schemas/user';
 import type { WriteAccess } from './scope';
 
 export const YNAB_API_BASE = 'https://api.ynab.com/v1';
@@ -111,6 +112,13 @@ function parseRateLimit(header: string | null): RateLimit | null {
 }
 
 export interface YnabClient {
+  /**
+   * Who the token belongs to.
+   *
+   * The one call that is about the credential rather than about a budget, and
+   * the cheapest way to find out whether a token works at all.
+   */
+  getUser(): Promise<YnabUser>;
   getBudgets(): Promise<Budget[]>;
   getAccounts(request: DeltaRequest): Promise<DeltaPage<Account>>;
   getPayees(request: DeltaRequest): Promise<DeltaPage<Payee>>;
@@ -209,6 +217,12 @@ export function createYnabClient(options: YnabClientOptions): YnabClient {
   }
 
   return {
+    async getUser() {
+      const { data } = await request('/user', userResponseSchema);
+
+      return data.user;
+    },
+
     async getBudgets() {
       const { data } = await request('/budgets', budgetsResponseSchema, {
         query: { include_accounts: 'false' },

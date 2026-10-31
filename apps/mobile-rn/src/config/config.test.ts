@@ -12,6 +12,9 @@ const COMPLETE = {
   supabaseAnonKey: 'anon-key',
   deepLinkScheme: 'com.brandontrautmann.lumy',
   supportEmail: 'support@example.com',
+  ynabClientId: 'ynab-client',
+  ynabAuthorizeUrl: 'https://app.ynab.com/oauth/authorize',
+  ynabTokenUrl: 'https://token.lumy.app/token',
 };
 
 describe('the app config', () => {
@@ -22,8 +25,18 @@ describe('the app config', () => {
   it('names every missing value at once', () => {
     // Finding them one launch at a time is the slowest way to configure an app.
     expect(() => parseConfig({ deepLinkScheme: 'com.brandontrautmann.lumy' })).toThrow(
-      /supabaseUrl, supabaseAnonKey, supportEmail/,
+      /supabaseUrl, supabaseAnonKey, supportEmail, ynabClientId, ynabAuthorizeUrl, ynabTokenUrl/,
     );
+  });
+
+  it('requires what YNAB authorisation needs', () => {
+    // Nothing here is the client secret, and there is none to set: the code
+    // exchange happens on apps/server, which holds it.
+    for (const key of ['ynabClientId', 'ynabAuthorizeUrl', 'ynabTokenUrl']) {
+      expect(() => parseConfig({ ...COMPLETE, [key]: '' }), key).toThrow(
+        new RegExp(key),
+      );
+    }
   });
 
   it('treats an empty string as missing, which is what an unset variable is', () => {
