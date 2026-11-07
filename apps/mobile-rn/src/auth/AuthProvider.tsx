@@ -33,6 +33,15 @@ export interface AuthValue {
   /** The most recent emailed link that could not be completed. */
   linkError: string | null;
   dismissLinkError: () => void;
+  /**
+   * Where the emailed link that was just completed asked to land.
+   *
+   * It is the only thing separating a sign-in from a confirmed email change,
+   * since both arrive as a deep link and exchange the same kind of code. The
+   * navigation shell resolves it and clears it; nothing else reads it.
+   */
+  linkPath: string | null;
+  clearLinkPath: () => void;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -79,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const api = useMemo(() => createApi(), []);
   const [state, setState] = useState<AuthState>({ status: 'loading' });
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [linkPath, setLinkPath] = useState<string | null>(null);
 
   useEffect(() => {
     const auth = supabase().auth;
@@ -118,7 +128,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (url === null) return;
 
       try {
-        await api.completeAuthFromUrl(url);
+        const outcome = await api.completeAuthFromUrl(url);
+        if (outcome.kind === 'signedIn' && !cancelled) {
+          setLinkPath(outcome.path);
+        }
       } catch (error) {
         if (!cancelled) {
           setLinkError(error instanceof Error ? error.message : String(error));
@@ -136,8 +149,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [api]);
 
   const value = useMemo<AuthValue>(
-    () => ({ state, api, linkError, dismissLinkError: () => setLinkError(null) }),
-    [state, api, linkError],
+    () => ({
+      state,
+      api,
+      linkError,
+      dismissLinkError: () => setLinkError(null),
+      linkPath,
+      clearLinkPath: () => setLinkPath(null),
+    }),
+    [state, api, linkError, linkPath],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -13,6 +13,58 @@ export const en = {
     unexpectedError: 'Something went wrong. Please try again.',
   },
 
+  welcome: {
+    title: 'Lumy',
+    tagline: 'Your YNAB budget, read properly.',
+    explainer:
+      'Lumy reads your YNAB budget and keeps it on this device. Sign in with an email address to sync what you set up in Lumy across your devices.',
+    signIn: 'Get started',
+  },
+
+  budgets: {
+    selectTitle: 'Choose a budget',
+    selectExplainer: 'Lumy shows one budget at a time. You can change it later in Settings.',
+    emptyTitle: 'No budgets',
+    emptyMessage: 'This YNAB account has no budgets in it yet. Create one in YNAB, then come back.',
+    loadFailed: 'Your budgets could not be loaded.',
+  },
+
+  tabs: {
+    comingSoon: 'This arrives with the feature that fills it.',
+  },
+
+  settings: {
+    accounts: 'Accounts',
+    lumyAccount: 'Lumy account',
+    ynabAccount: 'YNAB',
+    budget: 'Budget',
+    changeBudget: 'Change budget',
+    changeBudgetExplainer: 'Pick a different YNAB budget to show.',
+    developer: 'Developer',
+    debug: 'Debug',
+    developerExplainer: 'Only shown in a development build.',
+  },
+
+  navigation: {
+    budget: 'Budget',
+    reports: 'Reports',
+    settings: 'Settings',
+  },
+
+  errors: {
+    title: 'Oops',
+    message: 'Something went wrong and Lumy could not carry on. Trying again usually sorts it.',
+    databaseTitle: 'Lumy could not start',
+    databaseMessage:
+      'The database on this device could not be opened, so there is nothing to show. Restarting Lumy usually sorts it.',
+  },
+
+  notFound: {
+    title: 'Nothing here',
+    message: 'That link does not go anywhere in Lumy.',
+    goHome: 'Go to my budget',
+  },
+
   auth: {
     signIn: {
       title: 'Sign in',
