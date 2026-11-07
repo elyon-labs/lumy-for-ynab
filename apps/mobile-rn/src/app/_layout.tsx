@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppFonts } from '@lumy/ui';
 
 import { AuthProvider, YnabAuthProvider } from '@/auth';
+import { ErrorScreen } from '@/navigation';
 import { DatabaseProvider } from '@/data';
 import { initI18n } from '@/i18n';
 import { AppThemeProvider, SelectedBudgetProvider, SelectedPeriodProvider } from '@/settings';
@@ -17,6 +18,19 @@ void SplashScreen.preventAutoHideAsync();
 // Before the first render, because a screen reading a key that is not loaded
 // yet renders the key.
 initI18n();
+
+/**
+ * What a render that threw shows instead of a white screen.
+ *
+ * Exported from the root layout, so it catches anything below it that no
+ * nearer boundary claimed. This replaces `error_screen.dart`, which put both
+ * the error text and the way out behind a debug-mode check and so left a
+ * release build on an apology with no button; here only the detail is
+ * developer-only.
+ */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <ErrorScreen detail={error.message} onRetry={() => void retry()} />;
+}
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useAppFonts();

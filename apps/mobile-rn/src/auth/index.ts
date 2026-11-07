@@ -16,6 +16,7 @@ export * from './queries';
 export * from './resend';
 export * from './SignInScreen';
 export * from './supabase';
+export * from './WelcomeScreen';
 export * from './WriteAccessScreen';
 export * from './YnabAuthProvider';
 export * from './ynabAuthorize';
