@@ -27,10 +27,66 @@ export const en = {
     emptyTitle: 'No budgets',
     emptyMessage: 'This YNAB account has no budgets in it yet. Create one in YNAB, then come back.',
     loadFailed: 'Your budgets could not be loaded.',
+    refreshFailed: 'This list could not be refreshed, so it may be out of date.',
   },
 
   tabs: {
     comingSoon: 'This arrives with the feature that fills it.',
+  },
+
+  sync: {
+    firstRunTitle: 'Getting your budget',
+    firstRunHeading: 'Fetching your budget',
+    firstRunExplainer:
+      'Lumy is downloading this budget from YNAB and storing it on this device. A long-lived budget can take a few minutes the first time.',
+    starting: 'Starting',
+    progressLabel: 'Sync progress',
+
+    failedTitle: 'That sync did not finish',
+    failedMessage:
+      'Lumy could not download this budget. Trying again usually sorts it. If it keeps happening, check that YNAB still has Lumy connected.',
+
+    statusTitle: 'Sync',
+    syncNow: 'Sync now',
+    resourcesTitle: 'What Lumy has',
+    maintenanceTitle: 'Maintenance',
+    monthDetail: 'Monthly figures',
+    monthDetailCount_one: '{{count}} month',
+    monthDetailCount_other: '{{count}} months',
+    emailChangeConfirmed: 'Your email address has been changed.',
+
+    repair: 'Download this budget again',
+    repairExplainer: 'Throws away Lumy’s copy of this budget and fetches it from scratch.',
+    repairConfirmTitle: 'Download this budget again?',
+    repairConfirmMessage:
+      'Lumy will remove its copy of this budget and fetch it from YNAB from scratch. Nothing in YNAB changes, and what you set up in Lumy is kept.',
+
+    deleteAll: 'Delete synced data',
+    deleteAllExplainer: 'Removes Lumy’s copy of every budget from this device.',
+    deleteAllConfirmTitle: 'Delete synced data?',
+    deleteAllConfirmMessage:
+      'This removes Lumy’s copy of every budget from this device. Nothing in YNAB changes, and your category views, spend trackers, frugal months, and templates are kept. Lumy will offer to download the budget again.',
+
+    lastFetch: {
+      never: 'Never fetched',
+      unknown: 'Last fetch unknown',
+      justNow: 'Updated just now',
+      minutes_one: 'Updated {{count}} minute ago',
+      minutes_other: 'Updated {{count}} minutes ago',
+      hours_one: 'Updated {{count}} hour ago',
+      hours_other: 'Updated {{count}} hours ago',
+      days_one: 'Updated {{count}} day ago',
+      days_other: 'Updated {{count}} days ago',
+    },
+
+    resources: {
+      accounts: 'Accounts',
+      payees: 'Payees',
+      categories: 'Categories',
+      months: 'Months',
+      transactions: 'Transactions',
+      scheduled_transactions: 'Scheduled transactions',
+    },
   },
 
   settings: {
@@ -40,6 +96,8 @@ export const en = {
     budget: 'Budget',
     changeBudget: 'Change budget',
     changeBudgetExplainer: 'Pick a different YNAB budget to show.',
+    sync: 'Sync',
+    syncExplainer: 'What Lumy has fetched from YNAB, and when.',
     developer: 'Developer',
     debug: 'Debug',
     developerExplainer: 'Only shown in a development build.',

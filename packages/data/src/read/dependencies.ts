@@ -24,6 +24,9 @@ export type ReadName =
   | 'netWorthOverTime'
   | 'daysBuffer'
   | 'targetHealth'
+  | 'listBudgets'
+  | 'syncStatus'
+  | 'hasSyncedData'
   | 'getSetting';
 
 export const READ_TABLES: Record<ReadName, readonly string[]> = {
@@ -43,6 +46,14 @@ export const READ_TABLES: Record<ReadName, readonly string[]> = {
   daysBuffer: ['ledger_entries', 'accounts'],
   // The categories read carries the targets; the aggregate carries the spend.
   targetHealth: ['ledger_entries', 'categories'],
+  // The budget picker, which is the first read of either table — and so the
+  // first thing that makes writing them worth announcing.
+  listBudgets: ['budgets', 'currency_formats'],
+  // The two reads over server knowledge. A sync of any resource advances it,
+  // which is what moves the last-fetch display and what takes someone off the
+  // first-run sync screen once the last resource lands.
+  syncStatus: ['server_knowledge'],
+  hasSyncedData: ['server_knowledge'],
   // The one read that is not about the ledger. It is declared here like any
   // other so that a screen showing a setting re-reads it when the setting is
   // written, with nothing registered per screen.
@@ -68,9 +79,10 @@ export function readsAffectedBy(tables: readonly string[]): ReadName[] {
 /**
  * Every table any read depends on.
  *
- * A write to a table outside this set changes nothing a screen is showing —
- * `server_knowledge` and `schema_migrations` are the cases — so the subscriber
- * can ignore the notification outright rather than compute an empty answer.
+ * A write to a table outside this set changes nothing a screen is showing, so
+ * the subscriber can ignore the notification outright rather than compute an
+ * empty answer. `schema_migrations` is the only one left: the raw YNAB tables
+ * are outside it because every read of them goes through `ledger_entries`.
  */
 export const READ_DEPENDENCY_TABLES: readonly string[] = [
   ...new Set(READ_NAMES.flatMap((name) => READ_TABLES[name])),

@@ -19,6 +19,7 @@ import {
 } from '../testing';
 import { createSyncEngine, type SyncEngine } from './engine';
 import { BUDGET_SCOPED_TABLES, discardBudgetData } from './repair';
+import { Settings, setSetting } from '../settings';
 import type { Divergence } from './verify';
 
 const EVERYDAY = aCategoryGroup('everyday', 'Everyday Expenses', [
@@ -395,5 +396,78 @@ describe('repair', () => {
     await engine.repairBudget(BUDGET_ID);
 
     expect(await remaining('payees', other)).toBe(1);
+  });
+});
+
+describe('deleting all synced data', () => {
+  let harness: Harness;
+  let db: DatabaseAdapter;
+  let engine: SyncEngine;
+
+  const OTHER = 'budget-2';
+
+  beforeEach(async () => {
+    harness = await createHarness();
+    db = harness.db;
+    engine = createSyncEngine({ db, client: createStubClient(aScript()) });
+    await engine.syncBudget(BUDGET_ID);
+
+    // A second budget, because "all" is the whole point: switching budget
+    // leaves the previous one's rows where they are, and a delete scoped to
+    // the selected budget would leave them there for good.
+    await db.run('INSERT INTO budgets (id, name) VALUES (?, ?)', [OTHER, 'Other']);
+    await db.run('INSERT INTO payees (id, budget_id, name, deleted) VALUES (?, ?, ?, 0)', [
+      'other-payee',
+      OTHER,
+      'Someone',
+    ]);
+  });
+
+  afterEach(async () => {
+    await harness.close();
+  });
+
+  async function rows(table: string): Promise<number> {
+    const row = await db.get<{ total: number }>(`SELECT COUNT(*) AS total FROM ${table}`);
+
+    return row?.total ?? 0;
+  }
+
+  it('empties every budget, not only the one that is selected', async () => {
+    await engine.deleteAllSyncedData();
+
+    for (const table of [...BUDGET_SCOPED_TABLES, 'budgets']) {
+      expect(await rows(table), table).toBe(0);
+    }
+  });
+
+  it('leaves what the person configured alone', async () => {
+    await setSetting(db, Settings.selectedBudgetId, BUDGET_ID);
+    await setSetting(db, Settings.themePreference, 'light');
+
+    await engine.deleteAllSyncedData();
+
+    // Settings are not cached YNAB data, and the column that keeps them out of
+    // `BUDGET_SCOPED_TABLES` is the reason: `scope`, not `budget_id`.
+    expect(await rows('settings')).toBe(2);
+  });
+
+  it('reports the emptied tables, so nothing keeps showing data that has gone', async () => {
+    const before = harness.changes.length;
+
+    await engine.deleteAllSyncedData();
+
+    const announced = harness.changes.slice(before).flat();
+    expect(announced).toContain('ledger_entries');
+    expect(announced).toContain('server_knowledge');
+    expect(announced).toContain('budgets');
+  });
+
+  it('commits as one transaction, so no budget survives with its knowledge gone', async () => {
+    const before = harness.changes.length;
+
+    await engine.deleteAllSyncedData();
+
+    expect(harness.changes.slice(before)).toHaveLength(1);
   });
 });

@@ -10,6 +10,7 @@ import { ErrorScreen } from '@/navigation';
 import { DatabaseProvider } from '@/data';
 import { initI18n } from '@/i18n';
 import { AppThemeProvider, SelectedBudgetProvider, SelectedPeriodProvider } from '@/settings';
+import { SyncProvider } from '@/sync';
 
 // Held until the typeface is ready, so the first frame is never a fallback
 // face that reflows the moment Outfit loads.
@@ -62,7 +63,13 @@ export default function RootLayout() {
                 {/* Inside the account, because pairing the two writes the
                     `users` row and that needs both ids. */}
                 <YnabAuthProvider>
-                  <Stack screenOptions={{ headerShown: false }} />
+                  {/* Inside both, because the engine is the database and the
+                      YNAB client composed — and above the router, because the
+                      redirect chain itself reads whether a budget has been
+                      synced. */}
+                  <SyncProvider>
+                    <Stack screenOptions={{ headerShown: false }} />
+                  </SyncProvider>
                 </YnabAuthProvider>
               </AuthProvider>
             </SelectedPeriodProvider>

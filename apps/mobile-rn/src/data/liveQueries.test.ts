@@ -133,6 +133,9 @@ describe('database changes', () => {
     await cacheOneOfEach(['totals', 'savingsRateByMonth']);
 
     await db.run('INSERT INTO budgets (id, name) VALUES (?, ?)', [BUDGET, 'Budget']);
+    // The budget row is the subject of a read of its own now, so the insert
+    // above is reported. What this test is about is the write after it.
+    commits = [];
 
     // `months` is a table no read depends on, so a page of it is invisible.
     await db.transaction((tx) =>
@@ -147,7 +150,8 @@ describe('database changes', () => {
     expect(commits).toEqual([]);
   });
 
-  it('reports nothing for a write that only advanced server knowledge', async () => {
+  it('invalidates the sync reads for a write that only advanced server knowledge', async () => {
+    await cacheOneOfEach(['syncStatus', 'hasSyncedData', 'totals']);
     await db.run('INSERT INTO budgets (id, name) VALUES (?, ?)', [BUDGET, 'Budget']);
     commits = [];
 
@@ -159,7 +163,14 @@ describe('database changes', () => {
       ),
     );
 
-    expect(commits).toEqual([]);
+    // An empty delta page writes nothing but this row, and it is what the
+    // last-fetch display and the gate on the first-run sync screen are read
+    // from — so a sync that found nothing new still has to move both. Nothing
+    // over the ledger follows it, because nothing in the ledger changed.
+    expect(invalidated(queryClient)).toEqual(['hasSyncedData', 'syncStatus']);
+    expect(commits).toEqual([
+      { reads: ['hasSyncedData', 'syncStatus'], tables: ['server_knowledge'] },
+    ]);
   });
 
   it('invalidates the name-resolving reads when a payee is renamed', async () => {
@@ -188,21 +199,26 @@ describe('database changes', () => {
     });
     await engine.syncBudget(BUDGET);
 
-    // Three of the sync's commits wrote a table some read depends on. The
-    // budget list is not one of them: nothing reads `budgets` or
-    // `currency_formats` yet, so writing them invalidates nothing. Nor are the
-    // empty month, transaction, and scheduled pages, which advanced server
-    // knowledge and touched nothing else.
+    // Seven commits, one per page, and every one of them now reaches a read.
+    // The budget list fills the picker's table; the three empty pages at the
+    // end write nothing but the knowledge row the last-fetch display and the
+    // first-run gate are read from. The point the assertion makes is the
+    // grouping: a page writing three tables is one notification, not three.
     expect(commits.map((commit) => commit.tables)).toEqual([
+      ['budgets', 'currency_formats'],
       ['account_debt_months', 'accounts', 'server_knowledge'],
       ['payees', 'server_knowledge'],
       ['categories', 'category_groups', 'server_knowledge'],
+      ['server_knowledge'],
+      ['server_knowledge'],
+      ['server_knowledge'],
     ]);
   });
 
   it('stops listening when it is unsubscribed', async () => {
     await cacheOneOfEach(['sumBy']);
     await db.run('INSERT INTO budgets (id, name) VALUES (?, ?)', [BUDGET, 'Budget']);
+    commits = [];
     unsubscribe();
 
     // A write a live subscriber would have reported, so the silence below is

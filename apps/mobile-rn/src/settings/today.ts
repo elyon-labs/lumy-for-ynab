@@ -1,11 +1,18 @@
 /**
- * What day it is, where the person is.
+ * What time it is, where the person is.
  *
  * A period that ends "today" has to be resolved against the device's own
- * calendar day, so this is the one place in the app that reads a clock for a
- * date. Everything below it takes `YYYY-MM-DD` and is pure, which is how the
- * period arithmetic in `@lumy/data` stays testable without a clock at all.
+ * calendar day, and how long ago a sync was is measured from the moment it is
+ * asked — so this is the one module in the app that reads a clock. Everything
+ * below it takes a `YYYY-MM-DD` string or a `Date` and is pure, which is how
+ * the period arithmetic in `@lumy/data` and the last-fetch bands in
+ * `src/sync/lastFetch.ts` stay testable without a clock at all.
  */
+
+/** The current instant, for anything measuring elapsed time. */
+export function now(): Date {
+  return new Date();
+}
 
 /** The device's current date as `YYYY-MM-DD`, in local time rather than UTC. */
 export function today(now: Date = new Date()): string {

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import { useAuth } from '@/auth';
 
-import { resolveLinkPath } from './linkPath';
+import { resolveLink } from './linkPath';
 
 /**
  * Takes someone where the emailed link they opened asked to go.
@@ -23,10 +23,13 @@ export function AuthLinkRouter(): null {
   useEffect(() => {
     if (linkPath === null) return;
 
-    const target = resolveLinkPath(linkPath);
+    const target = resolveLink(linkPath);
     clearLinkPath();
 
-    if (target !== null) router.replace(target);
+    // As an object rather than a string, so the link's own query reaches the
+    // screen: `/settings/sync-status` is sent `email-change-confirmed=true`
+    // and says so when it arrives.
+    if (target !== null) router.replace({ pathname: target.route, params: target.params });
   }, [linkPath, clearLinkPath]);
 
   return null;

@@ -12,6 +12,7 @@ export * from './ListRow';
 export * from './Money';
 export * from './OptionsSheet';
 export * from './Pressable';
+export * from './ProgressBar';
 export * from './Screen';
 export * from './SectionHeader';
 export * from './Skeleton';

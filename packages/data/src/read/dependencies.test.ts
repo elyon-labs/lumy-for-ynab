@@ -21,8 +21,10 @@ import {
   readsAffectedBy,
   type ReadName,
 } from './dependencies';
+import { budgetListStatement } from './budgets';
 import { ledgerEntryPageStatement, transactionPageStatement } from './listings';
 import { settingStatement } from './settings';
+import { hasSyncedDataStatement, syncStatusStatement } from './syncStatus';
 
 /**
  * The declarations in `dependencies.ts` are only worth anything if they are
@@ -98,6 +100,12 @@ describe('read dependencies', () => {
         return [netWorthStatement(range)];
       case 'getSetting':
         return [settingStatement('theme_preference', '')];
+      case 'listBudgets':
+        return [budgetListStatement()];
+      case 'syncStatus':
+        return [syncStatusStatement(BUDGET_ID)];
+      case 'hasSyncedData':
+        return [hasSyncedDataStatement(BUDGET_ID)];
       default:
         return [];
     }
@@ -138,10 +146,12 @@ describe('read dependencies', () => {
 
   describe('what a write makes stale', () => {
     it('is every read over the ledger, when the ledger changes', () => {
-      // Every read but the settings one, which is the only read in the
-      // package that is not about a budget's data.
+      // Every read but the four that are not about a budget's entries: the
+      // setting, the budget list, and the two over server knowledge.
+      const elsewhere: ReadName[] = ['getSetting', 'listBudgets', 'syncStatus', 'hasSyncedData'];
+
       expect(readsAffectedBy(['ledger_entries'])).toEqual(
-        [...READ_NAMES].filter((name) => name !== 'getSetting').sort(),
+        [...READ_NAMES].filter((name) => !elsewhere.includes(name)).sort(),
       );
     });
 
@@ -153,8 +163,25 @@ describe('read dependencies', () => {
       expect(readsAffectedBy(['payees'])).toEqual(['sumBy']);
     });
 
+    it('is the sync reads, when knowledge advances', () => {
+      // `server_knowledge` used to be a table no read depended on, and this
+      // assertion said so. The last-fetch display and the gate on the
+      // first-run sync screen both read it, and both have to follow a sync
+      // that advanced it — an empty delta page writes nothing else at all, so
+      // without this a budget that just finished syncing would sit on the
+      // first-run screen until the app was restarted.
+      expect(readsAffectedBy(['server_knowledge'])).toEqual(['hasSyncedData', 'syncStatus']);
+    });
+
+    it('is the budget list, when the budgets are fetched', () => {
+      expect(readsAffectedBy(['budgets', 'currency_formats'])).toEqual(['listBudgets']);
+    });
+
     it('is nothing, for a table no read depends on', () => {
-      expect(readsAffectedBy(['server_knowledge', 'schema_migrations'])).toEqual([]);
+      // The migration bookkeeping, and the only one left: every raw YNAB table
+      // is read through `ledger_entries` rather than directly.
+      expect(readsAffectedBy(['schema_migrations'])).toEqual([]);
+      expect(readsAffectedBy(['transactions', 'subtransactions', 'months'])).toEqual([]);
     });
 
     it('is the union, for a write that touched several tables', () => {

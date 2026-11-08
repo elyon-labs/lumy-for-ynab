@@ -1,13 +1,14 @@
 import { Spacing } from '@lumy/theme';
 import { Card, EmptyState, ListRow, Screen, SectionHeader, Skeleton, Text } from '@lumy/ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { ErrorScreen } from '@/navigation';
 import { useSelectedBudget } from '@/settings';
 
-import { byMostRecentlyUsed, useBudgets } from './queries';
+import { budgetPickerState } from './pickerState';
+import { useBudgets, useRefreshBudgets } from './queries';
 
 /**
  * Choosing the budget everything else is about.
@@ -16,20 +17,41 @@ import { byMostRecentlyUsed, useBudgets } from './queries';
  * no budget and every screen in it had to tolerate that. Here it is a step
  * before the shell, which is what lets `useBudgetId` throw instead of
  * returning null.
+ *
+ * The list comes from the `budgets` table and the refresh writes it, so a
+ * second visit renders from what is stored while YNAB is being asked again.
+ * Which of those to show is `budgetPickerState`.
  */
 export function SelectBudgetScreen() {
   const { t } = useTranslation();
   const budgets = useBudgets();
+  const refresh = useRefreshBudgets();
+  // Destructured because it is the dependency: `mutate` is stable, where the
+  // mutation object is a new one on every state change — depending on that
+  // would re-fetch the list each time the fetch's own status moved.
+  const { mutate: fetchBudgets } = refresh;
   const { selectBudget } = useSelectedBudget();
   const [choosing, setChoosing] = useState<string | null>(null);
 
-  if (budgets.isError) {
+  // Fetched on arrival rather than on a button, because the list is what the
+  // screen is for. `mutate` is stable, so this runs once per visit.
+  useEffect(() => {
+    fetchBudgets();
+  }, [fetchBudgets]);
+
+  const state = budgetPickerState({
+    stored: budgets.data,
+    fetch: refresh.status,
+    error: refresh.error,
+  });
+
+  if (state.kind === 'failed') {
     return (
       <ErrorScreen
         title={t('budgets.selectTitle')}
         message={t('budgets.loadFailed')}
-        detail={budgets.error.message}
-        onRetry={() => void budgets.refetch()}
+        detail={state.error?.message}
+        onRetry={() => fetchBudgets()}
       />
     );
   }
@@ -41,30 +63,30 @@ export function SelectBudgetScreen() {
           <Text tone="muted">{t('budgets.selectExplainer')}</Text>
         </Card>
 
-        {budgets.isPending ? <LoadingRows /> : null}
+        {state.kind === 'loading' ? <LoadingRows /> : null}
 
-        {budgets.data !== undefined && budgets.data.length === 0 ? (
+        {state.kind === 'empty' ? (
           <EmptyState
             icon="wallet-outline"
             title={t('budgets.emptyTitle')}
             message={t('budgets.emptyMessage')}
             actionLabel={t('common.retry')}
-            onAction={() => void budgets.refetch()}
+            onAction={() => fetchBudgets()}
           />
         ) : null}
 
-        {budgets.data !== undefined && budgets.data.length > 0 ? (
+        {state.kind === 'list' ? (
           <>
             <SectionHeader title={t('budgets.selectTitle')} />
             <Card flush>
-              {byMostRecentlyUsed(budgets.data).map((budget) => (
+              {state.budgets.map((budget) => (
                 <ListRow
                   key={budget.id}
                   title={budget.name}
-                  subtitle={budget.currencyFormat?.isoCode}
+                  subtitle={budget.isoCode ?? undefined}
                   chevron
                   // Writing the setting is what flips the redirect chain to the
-                  // shell, so there is nothing to navigate to afterwards.
+                  // first sync, so there is nothing to navigate to afterwards.
                   onPress={() => {
                     setChoosing(budget.id);
                     void selectBudget(budget.id).catch(() => setChoosing(null));
@@ -73,6 +95,12 @@ export function SelectBudgetScreen() {
                 />
               ))}
             </Card>
+
+            {state.refreshError !== null ? (
+              <Text variant="caption" tone="negative">
+                {t('budgets.refreshFailed')}
+              </Text>
+            ) : null}
           </>
         ) : null}
       </ScrollView>

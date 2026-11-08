@@ -1,13 +1,14 @@
 import { useAuth, useYnabAuth } from '@/auth';
 import { useDatabaseState } from '@/data';
 import { useSelectedBudget } from '@/settings';
+import { useHasSyncedData } from '@/sync';
 
 import { shellDecision, type ShellDecision } from './shellDecision';
 
 /**
  * The redirect decision, read from the providers it depends on.
  *
- * All this does is narrow four provider states to the four values the decision
+ * All this does is narrow the providers' states to the five values the decision
  * is made from, so that the decision itself stays testable without a renderer.
  */
 export function useShellDecision(): ShellDecision {
@@ -15,6 +16,7 @@ export function useShellDecision(): ShellDecision {
   const { state: account } = useAuth();
   const { state: ynab } = useYnabAuth();
   const { budgetId, isLoaded } = useSelectedBudget();
+  const { hasSyncedData } = useHasSyncedData();
 
   return shellDecision({
     database: database.status,
@@ -23,5 +25,8 @@ export function useShellDecision(): ShellDecision {
     // `isLoaded` is the whole reason the setting's own null is not enough: an
     // unread setting reads as its default, and this one's default is null.
     selectedBudgetId: isLoaded ? budgetId : undefined,
+    // Already `boolean | undefined`: the read's own pending state is the
+    // unread answer, so there is no default to mistake for one here.
+    hasSyncedData,
   });
 }
