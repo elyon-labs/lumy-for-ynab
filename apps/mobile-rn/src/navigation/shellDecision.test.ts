@@ -14,13 +14,22 @@ const DATABASE: DatabaseStatus[] = ['opening', 'ready', 'failed'];
 const ACCOUNT: AccountStatus[] = ['loading', 'signedOut', 'signedIn'];
 const YNAB: YnabStatus[] = ['loading', 'disconnected', 'connected'];
 const BUDGET: ShellState['selectedBudgetId'][] = [undefined, null, 'budget-1'];
+const SYNCED: ShellState['hasSyncedData'][] = [undefined, false, true];
 
-/** Every state the four values can be in together. */
+/** Every state the five values can be in together. */
 function everyState(): ShellState[] {
   return DATABASE.flatMap((database) =>
     ACCOUNT.flatMap((account) =>
       YNAB.flatMap((ynab) =>
-        BUDGET.map((selectedBudgetId) => ({ database, account, ynab, selectedBudgetId })),
+        BUDGET.flatMap((selectedBudgetId) =>
+          SYNCED.map((hasSyncedData) => ({
+            database,
+            account,
+            ynab,
+            selectedBudgetId,
+            hasSyncedData,
+          })),
+        ),
       ),
     ),
   );
@@ -31,11 +40,12 @@ const READY: ShellState = {
   account: 'signedIn',
   ynab: 'connected',
   selectedBudgetId: 'budget-1',
+  hasSyncedData: true,
 };
 
 describe('shellDecision', () => {
-  it('covers every combination of the four states', () => {
-    expect(everyState()).toHaveLength(81);
+  it('covers every combination of the five states', () => {
+    expect(everyState()).toHaveLength(243);
 
     for (const state of everyState()) {
       expect(shellDecision(state).kind).toBeDefined();
@@ -48,7 +58,8 @@ describe('shellDecision', () => {
         state.database === 'ready' &&
         state.account === 'signedIn' &&
         state.ynab === 'connected' &&
-        typeof state.selectedBudgetId === 'string';
+        typeof state.selectedBudgetId === 'string' &&
+        state.hasSyncedData === true;
 
       expect(shellDecision(state).kind === 'app').toBe(isComplete);
     }
@@ -116,6 +127,51 @@ describe('shellDecision', () => {
     });
   });
 
+  it('waits on the sync read rather than reading its unread state as unsynced', () => {
+    // The trap `selectedBudgetId` has, one field along: `false` is both the
+    // answer for a budget with nothing synced and what an unread query looks
+    // like, so without the distinction every cold start would send someone who
+    // synced months ago to the first-run screen.
+    expect(shellDecision({ ...READY, hasSyncedData: undefined })).toEqual({ kind: 'wait' });
+    expect(shellDecision({ ...READY, hasSyncedData: false })).toEqual({
+      kind: 'onboarding',
+      path: '/first-sync',
+    });
+  });
+
+  it('never reads a loading state as its empty answer', () => {
+    // The invariant for both values that have one, stated at the point the
+    // chain reaches them: everything before the value is resolved and not its
+    // own empty answer, so the value itself is what the decision turns on.
+    for (const state of everyState()) {
+      if (state.database !== 'ready' || state.account !== 'signedIn' || state.ynab !== 'connected') {
+        continue;
+      }
+
+      if (state.selectedBudgetId === undefined) {
+        expect(shellDecision(state), JSON.stringify(state)).toEqual({ kind: 'wait' });
+        continue;
+      }
+
+      if (state.selectedBudgetId !== null && state.hasSyncedData === undefined) {
+        expect(shellDecision(state), JSON.stringify(state)).toEqual({ kind: 'wait' });
+      }
+    }
+  });
+
+  it('asks for the first sync only once a budget has been chosen', () => {
+    for (const state of everyState()) {
+      const decision = shellDecision(state);
+      if (decision.kind !== 'onboarding' || decision.path !== '/first-sync') continue;
+
+      // Syncing needs to know what to sync, so this can never be the answer
+      // for someone who has not picked a budget.
+      expect(typeof state.selectedBudgetId).toBe('string');
+      expect(state.account).toBe('signedIn');
+      expect(state.ynab).toBe('connected');
+    }
+  });
+
   it('asks for a budget only after both credentials are in hand', () => {
     for (const state of everyState()) {
       const decision = shellDecision(state);
@@ -136,6 +192,7 @@ describe('onboardingRedirect', () => {
     expect(onboardingRedirect('/welcome', '/welcome')).toBeNull();
     expect(onboardingRedirect('/connect-ynab', '/connect-ynab')).toBeNull();
     expect(onboardingRedirect('/select-budget', '/select-budget')).toBeNull();
+    expect(onboardingRedirect('/first-sync', '/first-sync')).toBeNull();
   });
 
   it('keeps someone on the sign-in screen while they are signed out', () => {
@@ -148,12 +205,16 @@ describe('onboardingRedirect', () => {
     // Connecting YNAB is what changes the answer; the connect screen itself
     // has no idea what comes next.
     expect(onboardingRedirect('/connect-ynab', '/select-budget')).toBe('/select-budget');
+    expect(onboardingRedirect('/select-budget', '/first-sync')).toBe('/first-sync');
     expect(onboardingRedirect('/sign-in', '/connect-ynab')).toBe('/connect-ynab');
     expect(onboardingRedirect('/welcome', '/connect-ynab')).toBe('/connect-ynab');
   });
 
   it('sends someone back to the step they skipped', () => {
     expect(onboardingRedirect('/select-budget', '/welcome')).toBe('/welcome');
+    // Choosing a different budget on the first-sync screen clears the setting,
+    // so the chain asks for the picker again from a screen after it.
+    expect(onboardingRedirect('/first-sync', '/select-budget')).toBe('/select-budget');
     expect(onboardingRedirect('/connect-ynab', '/welcome')).toBe('/welcome');
   });
 
@@ -165,7 +226,12 @@ describe('onboardingRedirect', () => {
   it('never redirects a step to itself', () => {
     // The property that stops a step added later looping for want of an entry
     // in a lookup table.
-    const steps: OnboardingRoute[] = ['/welcome', '/connect-ynab', '/select-budget'];
+    const steps: OnboardingRoute[] = [
+      '/welcome',
+      '/connect-ynab',
+      '/select-budget',
+      '/first-sync',
+    ];
 
     for (const step of steps) {
       expect(onboardingRedirect(step, step)).toBeNull();

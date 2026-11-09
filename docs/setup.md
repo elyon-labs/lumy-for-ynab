@@ -57,6 +57,10 @@ supabase db reset
 
 The local stack runs migrations and functions from `apps/supabase`. Configure local secrets with `supabase secrets set` when a function needs one.
 
+It serves the API on `http://localhost:54321`, which is what both apps' local
+config points at, and the emailed sign-in links land in Inbucket on
+`http://localhost:54324` rather than a real inbox.
+
 ## Token Server
 
 ```sh
@@ -67,6 +71,10 @@ dart run bin/server.dart
 
 Configure the server with local environment variables for your YNAB OAuth client ID, client secret, redirect URI, and any host/port settings used by the server.
 
+It serves on `http://localhost:8080` by default, which is what both apps' local
+config points at. It holds the client secret, which is why neither app has one:
+they post a code or a refresh token to this server and it does the exchange.
+
 ## React Native App
 
 The Expo app and the marketing site share one pnpm workspace rooted at the
@@ -74,6 +82,35 @@ repository root, so dependencies are installed there once.
 
 ```sh
 pnpm install
+```
+
+### Configuration
+
+What the app points at comes from `apps/mobile-rn/.env`, which `app.config.ts`
+reads into Expo's `extra` and `src/config` parses back. Copy the example and
+fill it in:
+
+```sh
+cp apps/mobile-rn/.env.example apps/mobile-rn/.env
+```
+
+A missing or empty value fails on launch naming itself. The values are read
+when Metro starts, so changing `.env` needs Metro restarted rather than the
+native project rebuilt.
+
+The defaults in `.env.example` point at the local Supabase stack and the local
+token server, so **start both before the app** or every request fails with
+"Could not connect to the server". `localhost` resolves from the iOS simulator,
+which shares the host's network; a physical device needs the Mac's LAN address
+instead. Point the two URLs at the deployed services to run against production
+data.
+
+The same values are in the Flutter app's env file under slightly different
+names — `CLIENT_ID` there is `YNAB_CLIENT_ID` here, and the rest match.
+
+### Running
+
+```sh
 pnpm mobile:start
 ```
 

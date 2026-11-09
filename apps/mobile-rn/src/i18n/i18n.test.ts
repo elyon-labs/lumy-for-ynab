@@ -18,6 +18,14 @@ const PLACEHOLDERS: Record<string, readonly string[]> = {
   'auth.signIn.resendIn': ['seconds'],
   'auth.account.pendingEmailExplainer': ['email'],
   'auth.changeEmail.sentExplainer': ['email'],
+  'sync.monthDetailCount_one': ['count'],
+  'sync.monthDetailCount_other': ['count'],
+  'sync.lastFetch.minutes_one': ['count'],
+  'sync.lastFetch.minutes_other': ['count'],
+  'sync.lastFetch.hours_one': ['count'],
+  'sync.lastFetch.hours_other': ['count'],
+  'sync.lastFetch.days_one': ['count'],
+  'sync.lastFetch.days_other': ['count'],
 };
 
 /** The catalog as `key.path` → string. */
@@ -62,6 +70,34 @@ describe('the English catalog', () => {
 
     for (const [key, names] of Object.entries(PLACEHOLDERS)) {
       expect(placeholdersIn(flat.get(key) ?? ''), key).toEqual([...names].sort());
+    }
+  });
+
+  it('gives every plural key both of English’s forms', () => {
+    // i18next picks the suffix from the count, so a key with `_one` and no
+    // `_other` renders its own name for every count but one — which looks
+    // like a missing string rather than a missing form.
+    const plural = [...flat.keys()].filter((key) => /_(one|other)$/.test(key));
+    expect(plural.length).toBeGreaterThan(0);
+
+    for (const key of plural) {
+      const base = key.replace(/_(one|other)$/, '');
+
+      expect(flat.has(`${base}_one`), `${base}_one`).toBe(true);
+      expect(flat.has(`${base}_other`), `${base}_other`).toBe(true);
+      // And no unsuffixed key beside them, which i18next would never reach.
+      expect(flat.has(base), base).toBe(false);
+    }
+  });
+
+  it('interpolates the count into every plural form', () => {
+    // A form that forgot `{{count}}` reads as the right words about the wrong
+    // number, which is the one failure the placeholder check above cannot see
+    // from the key alone.
+    for (const [key, value] of flat) {
+      if (!/_(one|other)$/.test(key)) continue;
+
+      expect(placeholdersIn(value), key).toContain('count');
     }
   });
 });

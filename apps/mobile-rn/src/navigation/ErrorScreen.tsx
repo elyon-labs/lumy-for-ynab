@@ -1,7 +1,8 @@
 import { Spacing } from '@lumy/theme';
-import { Button, Card, Icon, Screen, Text } from '@lumy/ui';
+import { Button, Card, Icon, Screen, Text, ThemeProvider } from '@lumy/ui';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export interface ErrorScreenProps {
   title?: string;
@@ -63,3 +64,29 @@ const styles = StyleSheet.create({
   centered: { textAlign: 'center' },
   action: { alignSelf: 'stretch' },
 });
+
+/**
+ * The error screen as the root error boundary has to render it.
+ *
+ * A boundary renders *instead of* the subtree that threw, so every provider
+ * that subtree set up is gone by the time this is on screen — including the
+ * two `ErrorScreen` needs. `useTheme` and `useSafeAreaInsets` both throw when
+ * their provider is missing, so the boundary's own render threw and the person
+ * saw the second error rather than the first. In a release build, where there
+ * is no LogBox, they would have seen nothing at all.
+ *
+ * So the boundary brings its own. Neither provider needs anything from the
+ * failed tree: the theme falls back to following the device, and the insets
+ * come from the window. Deliberately not the stored theme preference — reading
+ * it needs the database, and the database failing to open is one of the things
+ * this screen exists to report.
+ */
+export function RootErrorScreen(props: ErrorScreenProps) {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <ErrorScreen {...props} />
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}

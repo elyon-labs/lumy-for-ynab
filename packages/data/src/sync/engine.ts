@@ -12,7 +12,7 @@ import type {
 
 import type { DatabaseAdapter, Queryable } from '../adapters/types';
 import { advanceKnowledge, readKnowledge } from './knowledge';
-import { discardBudgetData } from './repair';
+import { discardAllYnabData, discardBudgetData } from './repair';
 import {
   MONTH_DETAIL_RESOURCE,
   SYNC_ORDER,
@@ -134,6 +134,14 @@ export interface SyncEngine {
    * takes the snapshot path, because its knowledge went with its rows.
    */
   repairBudget(budgetId: string): Promise<SyncReport>;
+  /**
+   * Deletes every budget's cached YNAB data and syncs nothing back.
+   *
+   * Unlike `repairBudget`, which is a repair, this is what someone asks for to
+   * get Lumy's copy of their budget off the device. What they configured in
+   * Lumy is in Supabase and is untouched.
+   */
+  deleteAllSyncedData(): Promise<void>;
 }
 
 export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
@@ -352,6 +360,10 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
       await db.transaction((tx) => discardBudgetData(tx, budgetId));
 
       return engine.syncBudget(budgetId, { full: true });
+    },
+
+    deleteAllSyncedData() {
+      return db.transaction((tx) => discardAllYnabData(tx));
     },
 
     async syncMonthDetail(budgetId, month) {

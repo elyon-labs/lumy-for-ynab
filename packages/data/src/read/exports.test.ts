@@ -45,6 +45,14 @@ const KINDS = {
   daysBuffer: 'aggregate',
   targetHealth: 'aggregate',
 
+  // Also aggregates, and bounded by something other than the budget's
+  // structure. `syncStatus` is one row per synced resource, so the resource
+  // list bounds it; `hasSyncedData` is a scalar; `listBudgets` is one row per
+  // budget on the connected account, which YNAB itself returns whole.
+  syncStatus: 'aggregate',
+  hasSyncedData: 'aggregate',
+  listBudgets: 'aggregate',
+
   // A setting. Bounded by the registry in `src/settings/definitions.ts`
   // rather than by anything in the database: one key, one scope, one row.
   getSetting: 'setting',
@@ -63,6 +71,9 @@ const KINDS = {
   totalBalanceStatement: 'pure',
   netWorthStatement: 'pure',
   monthlyNeededForTarget: 'pure',
+  syncStatusStatement: 'pure',
+  hasSyncedDataStatement: 'pure',
+  budgetListStatement: 'pure',
   monthsInTargetCadence: 'pure',
   hasRecurringTarget: 'pure',
   settingStatement: 'pure',

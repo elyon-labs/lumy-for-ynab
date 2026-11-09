@@ -57,3 +57,32 @@ export async function discardBudgetData(tx: Queryable, budgetId: string): Promis
 
   await tx.run('DELETE FROM budgets WHERE id = ?', [budgetId]);
 }
+
+/**
+ * Deletes every budget's cached YNAB data.
+ *
+ * What "delete all synced data" means, and the choice is deliberate: all of it,
+ * not the selected budget's. Switching budget leaves the previous one's rows
+ * where they are, so a per-budget delete would reclaim nothing someone could
+ * see and would leave the figure the screen quotes as "all" untrue.
+ * `repairBudget` is the per-budget act, and it re-downloads rather than
+ * removes.
+ *
+ * One transaction rather than one per budget, unlike a snapshot write. There
+ * is no network in it and nothing partway through is a state worth being left
+ * in: a delete-all that stopped between budgets would leave one budget's data
+ * behind with its knowledge gone, which is the shape of the Flutter bug this
+ * engine exists to make impossible.
+ *
+ * Only YNAB's data goes. Category views, spend trackers, frugal months, and
+ * templates are in Supabase, and `settings` — the theme, the period, the
+ * selected budget, the chart order — is in this database but not scoped by
+ * `budget_id`, so none of it is touched.
+ */
+export async function discardAllYnabData(tx: Queryable): Promise<void> {
+  for (const table of BUDGET_SCOPED_TABLES) {
+    await tx.run(`DELETE FROM ${table}`);
+  }
+
+  await tx.run('DELETE FROM budgets');
+}

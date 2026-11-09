@@ -1,46 +1,50 @@
-import type { Budget } from '@lumy/ynab';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { listBudgets, type BudgetSummary, type DatabaseAdapter } from '@lumy/data';
+import { useMutation, type UseMutationResult, type UseQueryResult } from '@tanstack/react-query';
 
-import { useYnabAuth } from '@/auth';
+import { useLiveQuery } from '@/data';
+import { useSync } from '@/sync';
 
 /**
- * The budgets on the connected YNAB account.
+ * The budgets this client knows about, and refreshing them.
  *
- * Deliberately outside the `queryKey` scheme in `@/data`, which is for
- * database reads and leads with a `ReadName` so a commit can invalidate by
- * prefix. This is a network read of something no local table holds yet: a
- * budget has to be chosen before anything can be synced for it, so the picker
- * cannot read the `budgets` table it is the precondition for.
+ * Two parts, deliberately: the list is read from the `budgets` table and the
+ * refresh goes through the sync engine's `syncBudgetList`, which fetches the
+ * list whole — YNAB offers no delta for it — and writes both `budgets` and
+ * `currency_formats` before returning.
+ *
+ * It used to call `client.getBudgets()` and persist nothing, which meant the
+ * picker fetched the same list the first sync would fetch again moments later,
+ * and could not render at all without a network. Going through the engine
+ * makes the write the point: the refresh fills the table, the table change
+ * invalidates this read, and the list follows. The engine is also the only
+ * thing in the app allowed to write YNAB data, so the alternative was a second
+ * writer of two tables.
  */
-export const BUDGETS_QUERY_KEY = ['ynab', 'budgets'] as const;
 
-export function useBudgets(): UseQueryResult<Budget[], Error> {
-  const { client } = useYnabAuth();
-
-  return useQuery({
-    queryKey: BUDGETS_QUERY_KEY,
-    queryFn: () => {
-      // The picker is only reached once the chain has seen a connected token,
-      // so this is the same kind of guard as `useBudgetId`'s.
-      if (client === null) throw new Error('YNAB is not connected.');
-
-      return client.getBudgets();
-    },
-    enabled: client !== null,
-  });
+/** Everything the picker renders, already ordered most recently used first. */
+export function useBudgets(): UseQueryResult<BudgetSummary[], Error> {
+  // Not budget-scoped: this is the read someone makes in order to have a
+  // budget, so there is nothing to put in that position.
+  return useLiveQuery('listBudgets', '', [], (db: DatabaseAdapter) => listBudgets(db));
 }
 
 /**
- * Most recently used first.
+ * Fetches the budget list from YNAB and stores it.
  *
- * Someone with several budgets almost always wants the one they were last in,
- * and `last_modified_on` is the only ordering YNAB gives that reflects that.
- * It has been seen absent, which sorts to the end rather than to the top.
+ * A mutation rather than a query, because what it is for is the write. What it
+ * returns is read from the table by `useBudgets`, which re-runs on its own
+ * when the write lands.
  */
-export function byMostRecentlyUsed(budgets: readonly Budget[]): Budget[] {
-  // An absent timestamp compares as the empty string, which sorts to the end
-  // of a descending comparison rather than the top.
-  const usedAt = (budget: Budget): string => budget.lastModifiedOn ?? '';
+export function useRefreshBudgets(): UseMutationResult<void, Error, void> {
+  const { engine } = useSync();
 
-  return [...budgets].sort((a, b) => usedAt(b).localeCompare(usedAt(a)));
+  return useMutation({
+    mutationFn: async () => {
+      // The picker is only reached once the chain has seen a connected token,
+      // so this is the same kind of guard as `useBudgetId`'s.
+      if (engine === null) throw new Error('YNAB is not connected.');
+
+      await engine.syncBudgetList();
+    },
+  });
 }

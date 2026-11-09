@@ -6,10 +6,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppFonts } from '@lumy/ui';
 
 import { AuthProvider, YnabAuthProvider } from '@/auth';
-import { ErrorScreen } from '@/navigation';
+import { RootErrorScreen } from '@/navigation';
 import { DatabaseProvider } from '@/data';
 import { initI18n } from '@/i18n';
 import { AppThemeProvider, SelectedBudgetProvider, SelectedPeriodProvider } from '@/settings';
+import { SyncProvider } from '@/sync';
 
 // Held until the typeface is ready, so the first frame is never a fallback
 // face that reflows the moment Outfit loads.
@@ -27,9 +28,13 @@ initI18n();
  * the error text and the way out behind a debug-mode check and so left a
  * release build on an apology with no button; here only the detail is
  * developer-only.
+ *
+ * `RootErrorScreen` rather than `ErrorScreen`, because a boundary renders in
+ * place of the subtree that threw — so the providers below are gone and it has
+ * to carry its own. See its own comment.
  */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  return <ErrorScreen detail={error.message} onRetry={() => void retry()} />;
+  return <RootErrorScreen detail={error.message} onRetry={() => void retry()} />;
 }
 
 export default function RootLayout() {
@@ -62,7 +67,13 @@ export default function RootLayout() {
                 {/* Inside the account, because pairing the two writes the
                     `users` row and that needs both ids. */}
                 <YnabAuthProvider>
-                  <Stack screenOptions={{ headerShown: false }} />
+                  {/* Inside both, because the engine is the database and the
+                      YNAB client composed — and above the router, because the
+                      redirect chain itself reads whether a budget has been
+                      synced. */}
+                  <SyncProvider>
+                    <Stack screenOptions={{ headerShown: false }} />
+                  </SyncProvider>
                 </YnabAuthProvider>
               </AuthProvider>
             </SelectedPeriodProvider>
