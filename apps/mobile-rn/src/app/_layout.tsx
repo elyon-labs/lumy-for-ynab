@@ -6,7 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppFonts } from '@lumy/ui';
 
 import { AuthProvider, YnabAuthProvider } from '@/auth';
-import { ErrorScreen } from '@/navigation';
+import { RootErrorScreen } from '@/navigation';
 import { DatabaseProvider } from '@/data';
 import { initI18n } from '@/i18n';
 import { AppThemeProvider, SelectedBudgetProvider, SelectedPeriodProvider } from '@/settings';
@@ -28,9 +28,13 @@ initI18n();
  * the error text and the way out behind a debug-mode check and so left a
  * release build on an apology with no button; here only the detail is
  * developer-only.
+ *
+ * `RootErrorScreen` rather than `ErrorScreen`, because a boundary renders in
+ * place of the subtree that threw — so the providers below are gone and it has
+ * to carry its own. See its own comment.
  */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  return <ErrorScreen detail={error.message} onRetry={() => void retry()} />;
+  return <RootErrorScreen detail={error.message} onRetry={() => void retry()} />;
 }
 
 export default function RootLayout() {
